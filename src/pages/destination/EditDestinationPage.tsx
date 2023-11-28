@@ -1,0 +1,427 @@
+import React, { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import {
+  CREATE_DESTINATION_MUTATION,
+  UPDATE_DESTINATION_MUTATION,
+} from "../../graphql/mutations";
+import DestinationPhotos from "../../components/settings/destination-photos";
+import DestinationBanner from "../../components/settings/destination-banner";
+import { GET_DESTINATIONS_QUERY, GET_TAGS_QUERY } from "../../graphql/query";
+import { Tag } from "../../components/settings/create-tag";
+import { Destination } from "../../components/destination/destination-card";
+import { Country, countryData } from "../../utils/countries";
+import { useDataStore } from "../../store/store";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import app from "../../utils/firebase";
+import { ErrorModal } from "../../components/common/ErrorModal";
+import { useNavigate } from "react-router";
+
+type GetDestinationsQueryResponse = {
+  getDestinations: Destination[]; // Assuming `Tag` is the type of your tags
+};
+
+const EditDestinationPage = () => {
+  const { selectedDestination } = useDataStore();
+  const [destinationName, setDestinationName] = useState(
+    selectedDestination?.destinationName || ""
+  );
+  const [bannerImage, setBannerImage] = useState(
+    selectedDestination?.bannerImage || ""
+  );
+  const [bannerHeading, setBannerHeading] = useState(
+    selectedDestination?.bannerHeading || ""
+  );
+  const [description, setDescription] = useState(
+    selectedDestination?.description || ""
+  );
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [tagId, setTagId] = useState(selectedDestination?.tag?.id || "");
+  const [selectedContinent, setSelectedContinent] = useState<string>(
+    selectedDestination?.continent || ""
+  );
+  const [selectedCountry, setSelectedCountry] = useState<string>(
+    selectedDestination?.country || ""
+  );
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [isPopular, setIsPopular] = useState(selectedDestination?.isPopular);
+
+  const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(!selectedDestination.id);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If selectedTour changes and has an id, we're no longer loading
+    if (selectedDestination.id) {
+      setIsLoading(false);
+    }
+  }, [selectedDestination]);
+
+  useEffect(() => {
+    if (selectedContinent) {
+      const continentCountries =
+        countryData.find((c) => c.continent === selectedContinent)?.countries ||
+        [];
+      setCountries(continentCountries);
+
+      // If the selected country does not exist in the new list of countries, reset it
+      if (
+        !continentCountries.some((country) => country.name === selectedCountry)
+      ) {
+        setSelectedCountry("");
+      }
+    }
+  }, [selectedContinent, countryData]);
+  // Initialize destinationId when destinationsData is loaded or when the selected tour changes
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Put your loading spinner or message here
+  }
+  const [updateDestination, { data, loading, error }] = useMutation(
+    UPDATE_DESTINATION_MUTATION,
+    {
+      update(cache, { data: { updateDestination } }) {
+        // Retrieve the current destination list from the cache
+        const existingDestinations =
+          cache.readQuery<GetDestinationsQueryResponse>({
+            query: GET_DESTINATIONS_QUERY,
+          });
+
+        if (existingDestinations) {
+          // Find the index of the dest that was updated
+          const updatedDestinationIndex =
+            existingDestinations.getDestinations.findIndex(
+              (destination) => destination.id === updateDestination.id
+            );
+
+          if (updatedDestinationIndex > -1) {
+            // Replace the old dest with the updated one
+            const updatedDestinations = [
+              ...existingDestinations.getDestinations.slice(
+                0,
+                updatedDestinationIndex
+              ),
+              updateDestination,
+              ...existingDestinations.getDestinations.slice(
+                updatedDestinationIndex + 1
+              ),
+            ];
+
+            // Write the updated list back to the cache
+            cache.writeQuery({
+              query: GET_DESTINATIONS_QUERY,
+              data: { getDestinations: updatedDestinations },
+            });
+          }
+        }
+      },
+      refetchQueries: [
+        GET_DESTINATIONS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
+      ],
+    }
+  );
+
+  const {
+    loading: tagsLoading,
+    error: tagsError,
+    data: tagsData,
+  } = useQuery(GET_TAGS_QUERY);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true); // Start loading
+
+    try {
+      const response = await updateDestination({
+        variables: {
+          updateDestinationInput: {
+            destinationId: selectedDestination.id,
+            destinationName: destinationName,
+            country: selectedCountry,
+            continent: selectedContinent,
+            isPopular: isPopular,
+            bannerImage: bannerImage,
+            bannerHeading: bannerHeading,
+            description: description,
+            imageUrls: imageUrls,
+            tagId: tagId, // This is the tag ID selected from the dropdown
+          },
+        },
+      });
+      console.log(response);
+      // Check if the mutation was successful
+      if (response.data.updateDestination) {
+        navigate("/alldestinations"); // Replace '/all-tours' with the actual path to your tours page
+      } else {
+        // Handle no data from mutation
+        setShowErrorModal(true);
+      }
+    } catch (err) {
+      setShowErrorModal(true); // Show error modal
+    } finally {
+      setIsSubmitting(false); // End loading
+    }
+  };
+  // In your parent component
+  const handlePhotosChange = (
+    newPhotos: Array<{ name: string; url: string }>
+  ) => {
+    setImageUrls((currentUrls) => {
+      // Create a map of current URLs for quick lookup
+      const urlMap = new Map(currentUrls.map((url) => [url, true]));
+
+      // Filter out new photos that are already in the state
+      const newUniqueUrls = newPhotos
+        .map((photo) => photo.url)
+        .filter((url) => !urlMap.has(url));
+
+      // Only append new unique URLs to the state
+      return [...currentUrls, ...newUniqueUrls];
+    });
+  };
+
+  useEffect(() => {
+    if (tagsData) {
+      // Handle fetched tags, perhaps format them if needed, or set them directly in state
+    }
+  }, [tagsData]);
+
+  // Handler for when the continent changes
+  const handleContinentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const continent = e.target.value;
+    setSelectedContinent(continent);
+
+    // Update the countries based on the selected continent
+    const continentData = countryData.find((c) => c.continent === continent);
+    setCountries(continentData ? continentData.countries : []);
+    setSelectedCountry(""); // Reset the selected country when the continent changes
+  };
+
+  // Handler for when the country changes
+  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCountry(e.target.value);
+  };
+
+  const storage = getStorage(app);
+
+  const handleBannerUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (!file) return;
+
+    const storageRef = ref(storage, `bannerImages/${file.name}`);
+    try {
+      setIsUploading(true);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      setBannerImage(downloadURL);
+    } catch (error) {
+      console.error("Error uploading banner image", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = event.target.value;
+    setBannerHeading(newTitle);
+  };
+
+  return (
+    <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark">
+        <h3 className="font-semibold text-black dark:text-white ">
+          Destination Details
+        </h3>
+      </div>
+      <div className="p-6.5">
+        <form className="w-full max-w-lg" onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label
+              htmlFor="destinationName"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Destination Name
+            </label>
+            <input
+              type="text"
+              id="destinationName"
+              value={destinationName}
+              onChange={(e) => setDestinationName(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              required
+            />
+          </div>
+          {/* Continent dropdown */}
+          <div className="mb-4">
+            <label
+              htmlFor="continent"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Continent
+            </label>
+            <select
+              id="continent"
+              value={selectedContinent}
+              onChange={(e) => handleContinentChange(e)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              required
+            >
+              <option value="">Select a continent</option>
+              {countryData.map((item, index) => (
+                <option key={index} value={item.continent}>
+                  {item.continent}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Country dropdown */}
+          <div className="mb-4">
+            <label
+              htmlFor="country"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Country
+            </label>
+            <select
+              id="country"
+              value={selectedCountry}
+              onChange={handleCountryChange}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              disabled={!selectedContinent}
+              required
+            >
+              <option value="">Select a country</option>
+              {countries.map((item, index) => (
+                <option key={index} value={item.name}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="destinationName"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Destination Description
+            </label>
+            <input
+              type="text"
+              id="destinationDescription"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <div className="flex items-center space-x-2">
+              <input
+                id="popular-destination"
+                type="checkbox"
+                checked={isPopular}
+                onChange={() => setIsPopular(!isPopular)}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label
+                htmlFor="popular-destination"
+                className="text-sm font-medium text-gray-900 dark:text-gray-300"
+              >
+                Is Destination Popular?
+              </label>
+            </div>
+          </div>
+          <div className="mb-4">
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Enter banner title..."
+                value={bannerHeading}
+                onChange={handleTitleChange}
+                className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+              <div className="flex items-center space-x-2">
+                {bannerImage && (
+                  <div className="relative flex justify-center w-full">
+                    <img
+                      src={bannerImage}
+                      alt="Tour"
+                      className="object-cover h-40 rounded-md shadow-md"
+                    />
+                    <label
+                      htmlFor="file-upload"
+                      className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 cursor-pointer"
+                    >
+                      Change Banner
+                    </label>
+                  </div>
+                )}
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleBannerUpload}
+                  accept="image/*"
+                />
+                {isUploading && (
+                  <div className="flex items-center justify-center">
+                    <div className="w-4 h-4 border-2 border-t-2 border-gray-200 rounded-full border-t-blue-600 animate-spin"></div>
+                    <span className="text-sm text-gray-500">Uploading...</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="tagId"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Tags
+            </label>
+            <select
+              id="tagId"
+              value={tagId}
+              onChange={(e) => setTagId(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              disabled={tagsLoading}
+            >
+              <option value="">Select a tag (optional)</option>
+              {tagsData?.getAllTags
+                ?.filter((tag: Tag) => tag.active) // This will filter out inactive tags
+                .map((tag: Tag) => (
+                  <option key={tag.id} value={tag.id}>
+                    {tag.name}
+                  </option>
+                ))}
+            </select>
+            {tagsError && (
+              <p className="text-xs italic text-red-500">{tagsError.message}</p>
+            )}
+          </div>
+          <div>
+            <DestinationPhotos onPhotosChange={handlePhotosChange} />
+          </div>
+          <button
+            type="submit"
+            className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
+            disabled={loading}
+          >
+            {isSubmitting ? "Updating..." : "Update Destination"}
+          </button>
+          {error && (
+            <p className="text-xs italic text-red-500">{error.message}</p>
+          )}
+        </form>
+      </div>
+      {showErrorModal && <ErrorModal setErrorModalOpen={setShowErrorModal} />}
+    </div>
+  );
+};
+
+export default EditDestinationPage;

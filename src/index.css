@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply relative text-base font-normal font-satoshi text-body bg-whiten z-1;
+  }
+}
+
