@@ -28,7 +28,7 @@ import ContentPage from "./pages/content/ContentPage";
 function App() {
   //page refresh at any location is leading me to root page
   const [loading, setLoading] = useState<boolean>(true);
-
+  console.log(import.meta.env.VITE_API_KEY);
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);
@@ -48,35 +48,42 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route
-            index
-            element={<Dashboard />}
-            />
+            <Route index element={<Dashboard />} />
             <Route
               path="package/create-package"
               element={<CreatePackagePage />}
             />
             <Route path="package/allpackages" element={<AllPackagesPage />} />
             <Route path="settings" element={<SettingPage />} />
-            <Route path="create-destination" element={<CreateDestinationPage />} />
+            <Route
+              path="create-destination"
+              element={<CreateDestinationPage />}
+            />
             <Route path="alldestinations" element={<AllDestinationsPage />} />
-            <Route path="editdestination/:destinationId" element={<EditDestinationPage />} />
-            
+            <Route
+              path="editdestination/:destinationId"
+              element={<EditDestinationPage />}
+            />
+
             <Route path="create-tour" element={<CreateTourPage />} />
             <Route path="alltours" element={<AllToursPage />} />
             <Route path="edittour/:tourId" element={<EditTourPage />} />
 
-            <Route path="create-attraction" element={<CreateAttractionPage />} />
+            <Route
+              path="create-attraction"
+              element={<CreateAttractionPage />}
+            />
             <Route path="allattractions" element={<AllAttractionsPage />} />
-            <Route path="editattraction/:attractionId" element={<EditAttractionPage />} />
+            <Route
+              path="editattraction/:attractionId"
+              element={<EditAttractionPage />}
+            />
 
             <Route path="create-thing" element={<CreateThingPage />} />
             <Route path="allthings" element={<AllThingsPage />} />
             <Route path="editthing/:thingId" element={<EditThingPage />} />
 
             <Route path="content" element={<ContentPage />} />
-
-
           </Route>
         </Routes>
       </Router>
