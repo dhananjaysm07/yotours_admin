@@ -10,6 +10,7 @@ import {
 } from "../../graphql/mutations";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { BsTrash2 } from "react-icons/bs";
+import TncComponent from "../../components/general/tnc-input-component";
 export interface Content {
   id: string;
   heroHeading: string;
@@ -29,6 +30,7 @@ const ContentPage = () => {
   const [heroHeading, setHeroHeading] = useState("");
   const [heroSubheading, setHeroSubheading] = useState("");
   const [heroImage, setHeroImage] = useState("");
+  const [tnc, setTnc] = useState("");
   const [footerLogo, setFooterLogo] = useState("");
   const [footerLinks, setFooterLinks] = useState([""]);
   const [socialLinks, setSocialLinks] = useState([""]);
@@ -47,6 +49,8 @@ const ContentPage = () => {
     data: contentData,
   } = useQuery(GET_CONTENT_QUERY);
 
+  console.log("get content", contentData);
+
   useEffect(() => {
     if (contentData && contentData.getContent) {
       // Assuming 'getContent' is the field in the query response containing your content data
@@ -57,6 +61,7 @@ const ContentPage = () => {
         footerLogo,
         footerLinks,
         socialLinks,
+        tnc,
       } = contentData.getContent;
       setHeroHeading(heroHeading || "");
       setHeroImage(heroImage || "");
@@ -64,6 +69,7 @@ const ContentPage = () => {
       setFooterLogo(footerLogo || "");
       setFooterLinks(footerLinks || []);
       setSocialLinks(socialLinks || []);
+      setTnc(tnc || "");
     }
   }, [contentData]);
   // Mutations
@@ -103,6 +109,7 @@ const ContentPage = () => {
       footerLogo: footerLogo,
       footerLinks: footerLinks,
       socialLinks: socialLinks,
+      tnc: tnc,
 
       // include other fields as needed
     };
@@ -389,6 +396,7 @@ const ContentPage = () => {
               </button>
             </div>
           </div>
+          <TncComponent setTnc={setTnc} tnc={tnc} />
 
           <button
             type="submit"

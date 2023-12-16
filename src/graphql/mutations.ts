@@ -223,6 +223,7 @@ export const UPDATE_CONTENT_MUTATION = gql`
       footerLinks
       footerLogo
       socialLinks
+      tnc
     }
   }
 `;

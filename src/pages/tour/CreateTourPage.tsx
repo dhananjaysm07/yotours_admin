@@ -87,7 +87,7 @@ const CreateTourPage = () => {
         },
       });
       // Handle success (e.g., clear form, display message, etc.)
-      if (response.data.updateTour) {
+      if (response.data.createTour) {
         navigate("/alltours"); // Replace '/all-tours' with the actual path to your tours page
       } else {
         // Handle no data from mutation
@@ -230,6 +230,7 @@ const CreateTourPage = () => {
             >
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
+              <option value="INR">INR</option>
               <option value="GBP">GBP</option>
               <option value="JPY">JPY</option>
               <option value="AUD">AUD</option>

@@ -162,6 +162,7 @@ export const GET_CONTENT_QUERY = gql`
       footerLinks
       footerLogo
       socialLinks
+      tnc
     }
   }
 `;
