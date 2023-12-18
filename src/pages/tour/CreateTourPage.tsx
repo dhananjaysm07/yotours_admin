@@ -27,6 +27,7 @@ const CreateTourPage = () => {
   const [tagId, setTagId] = useState("");
   const [tourImage, setTourImage] = useState("");
   const [tourHyperlink, setTourHyperlink] = useState("");
+  const [tourBokunId, setTourBokunId] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -83,6 +84,7 @@ const CreateTourPage = () => {
             tourHyperlink: tourHyperlink,
             destinationId: destinationId,
             tagId: tagId, // This is the tag ID selected from the dropdown
+            bokunId:tourBokunId
           },
         },
       });
@@ -269,6 +271,22 @@ const CreateTourPage = () => {
             {tagsError && (
               <p className="text-xs italic text-red-500">{tagsError.message}</p>
             )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="bokunId"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Tour Bokun ID
+            </label>
+            <input
+              type="text"
+              id="bokunId"
+              value={tourBokunId}
+              onChange={(e) => setTourBokunId(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              required
+            />
           </div>
           <div className="mb-4">
             <label

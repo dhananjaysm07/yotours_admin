@@ -37,7 +37,7 @@ const ContentPage = () => {
 
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [bokunChannelId, setBokunChannelId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const navigate = useNavigate();
@@ -62,6 +62,7 @@ const ContentPage = () => {
         footerLinks,
         socialLinks,
         tnc,
+        bokunChannelId,
       } = contentData.getContent;
       setHeroHeading(heroHeading || "");
       setHeroImage(heroImage || "");
@@ -70,6 +71,7 @@ const ContentPage = () => {
       setFooterLinks(footerLinks || []);
       setSocialLinks(socialLinks || []);
       setTnc(tnc || "");
+      setBokunChannelId(bokunChannelId || "");
     }
   }, [contentData]);
   // Mutations
@@ -110,6 +112,7 @@ const ContentPage = () => {
       footerLinks: footerLinks,
       socialLinks: socialLinks,
       tnc: tnc,
+      bokunChannelId: bokunChannelId,
 
       // include other fields as needed
     };
@@ -345,12 +348,12 @@ const ContentPage = () => {
                     type="text"
                     value={link}
                     onChange={(e) => updateFooterLink(index, e.target.value)}
-                    className="w-full rounded border px-3 py-2 text-sm"
+                    className="w-full px-3 py-2 text-sm border rounded"
                   />
                   <button
                     type="button"
                     onClick={() => deleteFooterLink(index)}
-                    className="px-4 py-2 text-sm text-white bg-danger rounded"
+                    className="px-4 py-2 text-sm text-white rounded bg-danger"
                   >
                     <BsTrash2 />
                   </button>
@@ -359,7 +362,7 @@ const ContentPage = () => {
               <button
                 type="button"
                 onClick={() => setFooterLinks([...footerLinks, ""])}
-                className="px-4 py-2 text-sm text-white bg-meta-3 rounded"
+                className="px-4 py-2 text-sm text-white rounded bg-meta-3"
               >
                 Add Link
               </button>
@@ -376,12 +379,12 @@ const ContentPage = () => {
                     type="text"
                     value={link}
                     onChange={(e) => updateSocialLink(index, e.target.value)}
-                    className="w-full rounded border px-3 py-2 text-sm"
+                    className="w-full px-3 py-2 text-sm border rounded"
                   />
                   <button
                     type="button"
                     onClick={() => deleteSocialLink(index)}
-                    className="px-4 py-2 text-sm text-white bg-danger rounded"
+                    className="px-4 py-2 text-sm text-white rounded bg-danger"
                   >
                     <BsTrash2 />
                   </button>
@@ -390,7 +393,7 @@ const ContentPage = () => {
               <button
                 type="button"
                 onClick={() => setSocialLinks([...socialLinks, ""])}
-                className="px-4 py-2 text-sm text-white bg-meta-3 rounded"
+                className="px-4 py-2 text-sm text-white rounded bg-meta-3"
               >
                 Add Link
               </button>
@@ -398,6 +401,22 @@ const ContentPage = () => {
           </div>
           <TncComponent setTnc={setTnc} tnc={tnc} />
 
+          <div className="mb-4">
+            <label
+              htmlFor="bokunChannelId"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Bokun Channel UUID
+            </label>
+            <input
+              type="text"
+              id="bokunChannelId"
+              value={bokunChannelId}
+              onChange={(e) => setBokunChannelId(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              required
+            />
+          </div>
           <button
             type="submit"
             className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"

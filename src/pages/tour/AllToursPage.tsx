@@ -14,6 +14,7 @@ export interface Tour {
   id: string;
   tourTitle: string;
   tourHyperlink: string;
+  tourBokunId:string
   price: string;
   currency: string;
   location: string;

@@ -69,6 +69,7 @@ export const GET_TOURS_QUERY = gql`
       }
       price
       currency
+      tourBokunId
       tag {
         id
         name
@@ -163,6 +164,7 @@ export const GET_CONTENT_QUERY = gql`
       footerLogo
       socialLinks
       tnc
+      bokunChannelId
     }
   }
 `;

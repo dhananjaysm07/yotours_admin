@@ -32,6 +32,7 @@ export const useDataStore = create<DataStore>((set) => ({
   selectedTour: {
     id: "",
     tourHyperlink: "",
+    tourBokunId: "",
     destination: {
       id: "",
       destinationName: "",
