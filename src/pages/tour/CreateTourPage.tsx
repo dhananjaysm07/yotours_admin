@@ -25,14 +25,16 @@ const CreateTourPage = () => {
   const [tourLocation, setTourLocation] = useState("");
   const [destinationId, setDestinationId] = useState("");
   const [tagId, setTagId] = useState("");
-  const [tourImage, setTourImage] = useState("");
+
   const [tourHyperlink, setTourHyperlink] = useState("");
   const [tourBokunId, setTourBokunId] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const navigate = useNavigate();
-
+  const defaultImg =
+    "https://firebasestorage.googleapis.com/v0/b/marketingform-d32c3.appspot.com/o/bannerImages%2Fbackground.png?alt=media&token=4c357a20-703d-41df-a5e0-b1f1a585a4a1";
+  const [tourImage, setTourImage] = useState("");
   const [createTour, { data, loading, error }] = useMutation(
     CREATE_TOUR_MUTATION,
     {
@@ -80,11 +82,11 @@ const CreateTourPage = () => {
             price: tourPrice,
             location: tourLocation,
             currency: currency,
-            imageUrls: [tourImage],
+            imageUrls: [tourImage || defaultImg],
             tourHyperlink: tourHyperlink,
             destinationId: destinationId,
             tagId: tagId, // This is the tag ID selected from the dropdown
-            bokunId:tourBokunId
+            tourBokunId: tourBokunId,
           },
         },
       });
@@ -301,7 +303,6 @@ const CreateTourPage = () => {
               value={tourHyperlink}
               onChange={(e) => setTourHyperlink(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              required
             />
           </div>
           <div className="mb-4">

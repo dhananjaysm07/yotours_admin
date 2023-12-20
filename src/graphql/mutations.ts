@@ -115,6 +115,7 @@ export const CREATE_TOUR_MUTATION = gql`
       tourTitle
       location
       price
+      tourBokunId
       images {
         id
         imageUrl
@@ -204,15 +205,15 @@ export const UPDATE_THING_MUTATION = gql`
 
 export const CREATE_CONTENT_MUTATION = gql`
   mutation CreateContent($createContentInput: CreateContentInput!) {
-  createContent(createContentInput: $createContentInput) {
-    id
-    heroHeading
-    heroImage
-    footerLinks
-    footerLogo
-    socialLinks
+    createContent(createContentInput: $createContentInput) {
+      id
+      heroHeading
+      heroImage
+      footerLinks
+      footerLogo
+      socialLinks
+    }
   }
-}
 `;
 export const UPDATE_CONTENT_MUTATION = gql`
   mutation UpdateContent($updateContentInput: UpdateContentInput!) {
