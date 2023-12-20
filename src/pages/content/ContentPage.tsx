@@ -11,6 +11,7 @@ import {
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { BsTrash2 } from "react-icons/bs";
 import TncComponent from "../../components/general/tnc-input-component";
+import PrivacyComponent from "../../components/general/privacy-input-component";
 export interface Content {
   id: string;
   heroHeading: string;
@@ -31,6 +32,7 @@ const ContentPage = () => {
   const [heroSubheading, setHeroSubheading] = useState("");
   const [heroImage, setHeroImage] = useState("");
   const [tnc, setTnc] = useState("");
+  const [privacy, setPrivacy] = useState("");
   const [footerLogo, setFooterLogo] = useState("");
   const [footerLinks, setFooterLinks] = useState([""]);
   const [socialLinks, setSocialLinks] = useState([""]);
@@ -63,6 +65,7 @@ const ContentPage = () => {
         socialLinks,
         tnc,
         bokunChannelId,
+        privacy
       } = contentData.getContent;
       setHeroHeading(heroHeading || "");
       setHeroImage(heroImage || "");
@@ -71,6 +74,7 @@ const ContentPage = () => {
       setFooterLinks(footerLinks || []);
       setSocialLinks(socialLinks || []);
       setTnc(tnc || "");
+      setPrivacy(privacy || "");
       setBokunChannelId(bokunChannelId || "");
     }
   }, [contentData]);
@@ -112,6 +116,7 @@ const ContentPage = () => {
       footerLinks: footerLinks,
       socialLinks: socialLinks,
       tnc: tnc,
+      privacy: privacy,
       bokunChannelId: bokunChannelId,
 
       // include other fields as needed
@@ -400,6 +405,7 @@ const ContentPage = () => {
             </div>
           </div>
           <TncComponent setTnc={setTnc} tnc={tnc} />
+          <PrivacyComponent setPrivacy={setPrivacy} privacy={privacy} />
 
           <div className="mb-4">
             <label

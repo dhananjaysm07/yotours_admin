@@ -24,6 +24,7 @@ const CreateAttractionPage = () => {
   const [attractionLocation, setAttractionLocation] = useState("");
   const [destinationId, setDestinationId] = useState("");
   const [tagId, setTagId] = useState("");
+ const [attractionBokunId, setAttractionBokunId] = useState("");
   const [attractionImage, setAttractionImage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [attractionHyperlink, setAttractionHyperlink] = useState("");
@@ -77,6 +78,7 @@ const CreateAttractionPage = () => {
             location: attractionLocation,
             imageUrls: [attractionImage],
             destinationId: destinationId,
+            attractionBokunId: attractionBokunId,
             tagId: tagId, // This is the tag ID selected from the dropdown
           },
         },
@@ -257,6 +259,22 @@ const CreateAttractionPage = () => {
           </div>
           <div className="mb-4">
             <label
+              htmlFor="attractionBokunId"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Attraction Bokun ID
+            </label>
+            <input
+              type="text"
+              id="attractionBokunId"
+              value={attractionBokunId}
+              onChange={(e) => setAttractionBokunId(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              
+            />
+          </div>
+          <div className="mb-4">
+            <label
               htmlFor="toutTitle"
               className="block mb-2 text-sm font-bold text-gray-700"
             >
@@ -268,7 +286,7 @@ const CreateAttractionPage = () => {
               value={attractionHyperlink}
               onChange={(e) => setAttractionHyperlink(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              required
+              
             />
           </div>
           <div className="mb-4">

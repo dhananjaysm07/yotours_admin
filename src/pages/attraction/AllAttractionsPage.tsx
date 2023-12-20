@@ -15,6 +15,7 @@ export interface Attraction {
   price: string;
   currency: string;
   location: string;
+  attractionBokunId: string;
   attractionHyperlink: string;
   images: Image[];
   destination: Pick<Destination, "id" | "destinationName">;
@@ -25,6 +26,7 @@ export interface Attraction {
 }
 const AllAttractionsPage: React.FC = () => {
   const { attractionData, attractionError, attractionLoading } = useData();
+  console.log(attractionData);
   const { setSelectedAttraction } = useDataStore();
   const navigate = useNavigate();
   if (attractionLoading) return <p>Loading attractions...</p>;

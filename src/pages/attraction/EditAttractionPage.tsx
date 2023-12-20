@@ -36,6 +36,7 @@ const EditAttractionPage = () => {
   const [destinationId, setDestinationId] = useState(
     selectedAttraction?.destination?.id || ""
   );
+  const [attractionBokunId, setAttractionBokunId] = useState(selectedAttraction?.attractionBokunId || "");
   const [tagId, setTagId] = useState(selectedAttraction?.tag?.id || "");
   const [attractionImage, setAttractionImage] = useState(
     selectedAttraction?.images?.[0]?.imageUrl || ""
@@ -125,6 +126,7 @@ const EditAttractionPage = () => {
             currency: currency,
             location: attractionLocation,
             attractionHyperlink: attractionHyperlink,
+            attractionBokunId: attractionBokunId,
             imageUrls: [attractionImage],
             destinationId: destinationId,
             tagId: tagId, // This is the tag ID selected from the dropdown
@@ -313,6 +315,22 @@ const EditAttractionPage = () => {
           </div>
           <div className="mb-4">
             <label
+              htmlFor="attractionBokunId"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Attraction Bokun ID
+            </label>
+            <input
+              type="text"
+              id="attractionBokunId"
+              value={attractionBokunId}
+              onChange={(e) => setAttractionBokunId(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              
+            />
+          </div>
+          <div className="mb-4">
+            <label
               htmlFor="toutTitle"
               className="block mb-2 text-sm font-bold text-gray-700"
             >
@@ -324,7 +342,7 @@ const EditAttractionPage = () => {
               value={attractionHyperlink}
               onChange={(e) => setAttractionHyperlink(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              required
+              
             />
           </div>
           <div className="mb-4">

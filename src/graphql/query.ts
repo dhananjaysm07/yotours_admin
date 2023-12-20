@@ -87,6 +87,7 @@ export const GET_ATTRACTIONS_QUERY = gql`
       id
       attractionTitle
       location
+      attractionBokunId
       attractionHyperlink
       price
       currency
@@ -113,6 +114,7 @@ export const GET_ATTRACTION_QUERY = gql`
       attractionTitle
       location
       price
+      attractionBokunId
       destination {
         id
         destinationName
@@ -164,6 +166,7 @@ export const GET_CONTENT_QUERY = gql`
       footerLogo
       socialLinks
       tnc
+      # privacy
       bokunChannelId
     }
   }

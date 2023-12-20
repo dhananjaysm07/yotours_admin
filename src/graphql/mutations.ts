@@ -132,6 +132,7 @@ export const UPDATE_TOUR_MUTATION = gql`
       tourTitle
       location
       price
+      tourBokunId
       images {
         id
         imageUrl
@@ -147,6 +148,7 @@ export const CREATE_ATTRACTION_MUTATION = gql`
     createAttraction(createAttractionInput: $createAttractionInput) {
       id
       attractionTitle
+      attractionBokunId
       attractionHyperlink
       location
       price
@@ -163,6 +165,7 @@ export const UPDATE_ATTRACTION_MUTATION = gql`
     updateAttraction(updateAttractionInput: $updateAttractionInput) {
       id
       attractionTitle
+      attractionBokunId
       location
       price
       images {
