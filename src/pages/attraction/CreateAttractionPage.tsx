@@ -41,9 +41,9 @@ const CreateAttractionPage = () => {
         // Retrieve the current tour list from the cache
         const existingAttractions =
           cache.readQuery<GetAttractionsQueryResponse>({
-            query: GET_TOURS_QUERY,
+            query: GET_ATTRACTIONS_QUERY,
           });
-
+        console.log("existing att", existingAttractions);
         // Add the new tour to the list
         const newAttractions = existingAttractions
           ? [...existingAttractions.getAttractions, createAttraction]
@@ -85,6 +85,7 @@ const CreateAttractionPage = () => {
             imageUrls: [attractionImage],
             destinationId: destinationId,
             attractionBokunId: attractionBokunId,
+            attractionHyperlink: attractionHyperlink,
             tagId: tagId, // This is the tag ID selected from the dropdown
           },
         },
