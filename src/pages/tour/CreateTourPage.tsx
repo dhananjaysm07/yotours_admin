@@ -200,7 +200,6 @@ const CreateTourPage = () => {
               value={tourLocation}
               onChange={(e) => setTourLocation(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              required
             />
           </div>
           <div className="mb-4">
@@ -216,7 +215,6 @@ const CreateTourPage = () => {
               value={tourPrice}
               onChange={(e) => setTourPrice(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              required
             />
           </div>
           <div className="mb-4">
@@ -230,7 +228,7 @@ const CreateTourPage = () => {
               id="currency"
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
               onChange={(e) => setCurrency(e.target.value)} // Assuming you have a state setter function for currency
-              required
+              
             >
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
@@ -287,7 +285,6 @@ const CreateTourPage = () => {
               value={tourBokunId}
               onChange={(e) => setTourBokunId(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              required
             />
           </div>
           <div className="mb-4">

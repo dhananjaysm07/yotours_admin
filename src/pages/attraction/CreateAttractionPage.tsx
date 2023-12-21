@@ -12,6 +12,8 @@ import { Destination } from "../../components/destination/destination-card";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../../utils/firebase";
 import { Attraction } from "./AllAttractionsPage";
+import { useNavigate } from "react-router";
+import { ErrorModal } from "../../components/common/ErrorModal";
 
 type GetAttractionsQueryResponse = {
   getAttractions: Attraction[];
@@ -20,14 +22,18 @@ type GetAttractionsQueryResponse = {
 const CreateAttractionPage = () => {
   const [attractionTitle, setAttractionTitle] = useState("");
   const [price, setPrice] = useState("");
-  const [currency, setCurrency] = useState("USD")
+  const [currency, setCurrency] = useState("USD");
   const [attractionLocation, setAttractionLocation] = useState("");
   const [destinationId, setDestinationId] = useState("");
   const [tagId, setTagId] = useState("");
- const [attractionBokunId, setAttractionBokunId] = useState("");
+  const [attractionBokunId, setAttractionBokunId] = useState("");
   const [attractionImage, setAttractionImage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [attractionHyperlink, setAttractionHyperlink] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const navigate = useNavigate();
+
   const [createAttraction, { data, loading, error }] = useMutation(
     CREATE_ATTRACTION_MUTATION,
     {
@@ -69,7 +75,7 @@ const CreateAttractionPage = () => {
     e.preventDefault();
 
     try {
-      await createAttraction({
+      const response = await createAttraction({
         variables: {
           createAttractionInput: {
             attractionTitle: attractionTitle,
@@ -84,8 +90,16 @@ const CreateAttractionPage = () => {
         },
       });
       // Handle success (e.g., clear form, display message, etc.)
+      if (response.data.createAttraction) {
+        navigate("/allattractions"); // Replace '/all-tours' with the actual path to your tours page
+      } else {
+        // Handle no data from mutation
+        setShowErrorModal(true);
+      }
     } catch (err) {
-      // Handle error (e.g., display error message)
+      setShowErrorModal(true); // Show error modal
+    } finally {
+      setIsSubmitting(false); // End loading
     }
   };
 
@@ -184,7 +198,6 @@ const CreateAttractionPage = () => {
               value={attractionLocation}
               onChange={(e) => setAttractionLocation(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              required
             />
           </div>
           <div className="mb-4">
@@ -198,7 +211,6 @@ const CreateAttractionPage = () => {
               id="currency"
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
               onChange={(e) => setCurrency(e.target.value)} // Assuming you have a state setter function for currency
-              required
             >
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
@@ -226,7 +238,6 @@ const CreateAttractionPage = () => {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              required
             />
           </div>
 
@@ -270,7 +281,6 @@ const CreateAttractionPage = () => {
               value={attractionBokunId}
               onChange={(e) => setAttractionBokunId(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              
             />
           </div>
           <div className="mb-4">
@@ -286,7 +296,6 @@ const CreateAttractionPage = () => {
               value={attractionHyperlink}
               onChange={(e) => setAttractionHyperlink(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              
             />
           </div>
           <div className="mb-4">
@@ -323,13 +332,14 @@ const CreateAttractionPage = () => {
             className="px-4 py-2 font-bold text-white rounded bg-meta-5 hover:bg-blue-700 focus:outline-none focus:shadow-outline"
             disabled={loading}
           >
-            Create Attraction
+            {isSubmitting ? "Creating..." : "Create Attraction"}
           </button>
           {error && (
             <p className="text-xs italic text-red-500">{error.message}</p>
           )}
         </form>
       </div>
+      {showErrorModal && <ErrorModal setErrorModalOpen={setShowErrorModal} />}
     </div>
   );
 };

@@ -7,12 +7,15 @@ import { GET_DESTINATIONS_QUERY, GET_TAGS_QUERY } from "../../graphql/query";
 import { Tag } from "../../components/settings/create-tag";
 import { Destination } from "../../components/destination/destination-card";
 import { Country, countryData } from "../../utils/countries";
+import { useNavigate } from "react-router";
+import { ErrorModal } from "../../components/common/ErrorModal";
 
 type GetDestinationsQueryResponse = {
   getDestinations: Destination[]; // Assuming `Tag` is the type of your tags
 };
 
 const CreateDestinationPage = () => {
+  const navigate = useNavigate();
   const [destinationName, setDestinationName] = useState("");
   const [bannerImage, setBannerImage] = useState("");
   const [bannerHeading, setBannerHeading] = useState("");
@@ -24,6 +27,9 @@ const CreateDestinationPage = () => {
     image: "",
     title: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const [createDestination, { data, loading, error }] = useMutation(
     CREATE_DESTINATION_MUTATION,
@@ -60,22 +66,33 @@ const CreateDestinationPage = () => {
     const bannerImageToUse = bannerData.image || bannerImage;
     const bannerHeadingToUse = bannerData.title || bannerHeading;
     try {
-      await createDestination({
+      const response = await createDestination({
         variables: {
           createDestinationInput: {
             destinationName: destinationName,
+            continent: selectedContinent,
+            country: selectedCountry,
             bannerImage: bannerImageToUse,
             bannerHeading: bannerHeadingToUse,
-            isPopular:isPopular,
+            isPopular: isPopular,
             description: description,
             imageUrls: imageUrls,
             tagId: tagId, // This is the tag ID selected from the dropdown
           },
         },
       });
+
       // Handle success (e.g., clear form, display message, etc.)
+      if (response.data.createDestination) {
+        navigate("/alldestinations"); // Replace '/all-tours' with the actual path to your tours page
+      } else {
+        // Handle no data from mutation
+        setShowErrorModal(true);
+      }
     } catch (err) {
-      // Handle error (e.g., display error message)
+      setShowErrorModal(true); // Show error modal
+    } finally {
+      setIsSubmitting(false); // End loading
     }
   };
   // In your parent component
@@ -212,7 +229,6 @@ const CreateDestinationPage = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              required
             />
           </div>
           <div className="flex items-center space-x-2">
@@ -220,7 +236,7 @@ const CreateDestinationPage = () => {
               id="popular-destination"
               type="checkbox"
               checked={isPopular}
-              onChange={()=> setIsPopular(!isPopular)}
+              onChange={() => setIsPopular(!isPopular)}
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
             />
             <label
@@ -268,13 +284,14 @@ const CreateDestinationPage = () => {
             className="px-4 py-2 font-bold text-white rounded bg-meta-5 hover:bg-blue-700 focus:outline-none focus:shadow-outline"
             disabled={loading}
           >
-            Create Destination
+            {isSubmitting ? "Creating..." : "Create Destination"}
           </button>
           {error && (
             <p className="text-xs italic text-red-500">{error.message}</p>
           )}
         </form>
       </div>
+      {showErrorModal && <ErrorModal setErrorModalOpen={setShowErrorModal} />}
     </div>
   );
 };
