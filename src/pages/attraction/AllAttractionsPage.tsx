@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Destination } from "../../components/destination/destination-card";
 import { useNavigate } from "react-router";
@@ -51,7 +50,7 @@ const AllAttractionsPage: React.FC = () => {
               src={attraction.images[0].imageUrl}
               alt={attraction.attractionTitle}
             />
-            <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white transition-opacity duration-500 ease-in-out bg-black opacity-0 bg-opacity-60 group-hover:opacity-100">
+            <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white transition-opacity duration-500 ease-in-out bg-black  bg-opacity-60 group-hover:opacity-100">
               {attraction.destination?.destinationName}
             </div>
           </div>

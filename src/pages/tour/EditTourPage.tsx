@@ -21,6 +21,8 @@ type GetToursQueryResponse = {
 
 const EditTourPage = () => {
   const { selectedTour } = useDataStore();
+  const defaultImg =
+    "https://firebasestorage.googleapis.com/v0/b/marketingform-d32c3.appspot.com/o/bannerImages%2Fbackground.png?alt=media&token=4c357a20-703d-41df-a5e0-b1f1a585a4a1";
 
   const [tourTitle, setTourTitle] = useState(selectedTour?.tourTitle || "");
   const [tourPrice, setTourPrice] = useState(selectedTour?.price || "");
@@ -33,7 +35,7 @@ const EditTourPage = () => {
     selectedTour?.destination?.id || ""
   );
   const [tourImage, setTourImage] = useState(
-    selectedTour?.images?.[0]?.imageUrl || ""
+    selectedTour?.images?.[0]?.imageUrl || defaultImg
   );
   const [tagId, setTagId] = useState(selectedTour?.tag?.id || "");
   const [tourHyperlink, setTourHyperlink] = useState(
@@ -41,10 +43,13 @@ const EditTourPage = () => {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(!selectedTour.id);
-  const [tourBokunId, setTourBokunId] = useState(selectedTour?.tourBokunId || "");
+  const [tourBokunId, setTourBokunId] = useState(
+    selectedTour?.tourBokunId || ""
+  );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -88,7 +93,6 @@ const EditTourPage = () => {
             });
           }
         }
-
       },
       refetchQueries: [
         GET_TOURS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
@@ -383,14 +387,14 @@ const EditTourPage = () => {
             className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
             disabled={loading}
           >
-             {isSubmitting ? 'Updating...' : 'Update Tour'}
+            {isSubmitting ? "Updating..." : "Update Tour"}
           </button>
           {error && (
             <p className="text-xs italic text-red-500">{error.message}</p>
           )}
         </form>
       </div>
-      {showErrorModal && (<ErrorModal setErrorModalOpen={setShowErrorModal}/>)}
+      {showErrorModal && <ErrorModal setErrorModalOpen={setShowErrorModal} />}
     </div>
   );
 };

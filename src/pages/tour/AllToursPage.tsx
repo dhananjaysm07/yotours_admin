@@ -14,7 +14,7 @@ export interface Tour {
   id: string;
   tourTitle: string;
   tourHyperlink: string;
-  tourBokunId:string
+  tourBokunId: string;
   price: string;
   currency: string;
   location: string;
@@ -50,7 +50,7 @@ const AllToursPage: React.FC = () => {
               src={tour.images[0].imageUrl}
               alt={tour.tourTitle}
             />
-            <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white transition-opacity duration-500 ease-in-out bg-black opacity-0 bg-opacity-60 group-hover:opacity-100">
+            <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white  duration-500 ease-in-out bg-black  bg-opacity-60 ">
               {tour.destination?.destinationName}
             </div>
           </div>

@@ -10,17 +10,17 @@ interface Image {
 export interface Destination {
   id: string;
   destinationName: string;
-  continent:string
-  country:string
+  continent: string;
+  country: string;
   description: string;
-  isPopular:boolean;
+  isPopular: boolean;
   bannerImage: string;
   bannerHeading: string;
   images: Image[];
-  tag:{
-    id:string;
-    name:string;
-  }
+  tag: {
+    id: string;
+    name: string;
+  };
 }
 
 interface DestinationCardProps {
@@ -30,7 +30,7 @@ interface DestinationCardProps {
 const DestinationCard: React.FC<DestinationCardProps> = ({ destination }) => {
   return (
     <div className="max-w-sm overflow-hidden transition duration-500 transform rounded shadow-lg hover:scale-105">
-       <div className="relative group">
+      <div className="relative group">
         <img
           className="object-cover w-full h-48 transition-transform duration-500 ease-in-out group-hover:scale-110"
           src={destination.bannerImage}

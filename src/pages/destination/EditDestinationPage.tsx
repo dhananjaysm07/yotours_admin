@@ -21,12 +21,18 @@ type GetDestinationsQueryResponse = {
 };
 
 const EditDestinationPage = () => {
+  const defaultImg =
+    "https://firebasestorage.googleapis.com/v0/b/marketingform-d32c3.appspot.com/o/bannerImages%2Fbackground.png?alt=media&token=4c357a20-703d-41df-a5e0-b1f1a585a4a1";
   const { selectedDestination } = useDataStore();
+  const imageArray: string[] = selectedDestination?.images?.map(
+    (el) => el.imageUrl
+  );
+  console.log("selected destination", selectedDestination);
   const [destinationName, setDestinationName] = useState(
     selectedDestination?.destinationName || ""
   );
   const [bannerImage, setBannerImage] = useState(
-    selectedDestination?.bannerImage || ""
+    selectedDestination?.bannerImage || defaultImg
   );
   const [bannerHeading, setBannerHeading] = useState(
     selectedDestination?.bannerHeading || ""
@@ -34,7 +40,9 @@ const EditDestinationPage = () => {
   const [description, setDescription] = useState(
     selectedDestination?.description || ""
   );
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>(imageArray);
+  // console.log(imageUrls);
+  // selectedDestination.images
   const [tagId, setTagId] = useState(selectedDestination?.tag?.id || "");
   const [selectedContinent, setSelectedContinent] = useState<string>(
     selectedDestination?.continent || ""
@@ -142,7 +150,7 @@ const EditDestinationPage = () => {
             country: selectedCountry,
             continent: selectedContinent,
             isPopular: isPopular,
-            bannerImage: bannerImage,
+            bannerImage: bannerImage || defaultImg,
             bannerHeading: bannerHeading,
             description: description,
             imageUrls: imageUrls,
@@ -176,7 +184,7 @@ const EditDestinationPage = () => {
       const newUniqueUrls = newPhotos
         .map((photo) => photo.url)
         .filter((url) => !urlMap.has(url));
-
+      // console.log("handle change", imageUrls);
       // Only append new unique URLs to the state
       return [...currentUrls, ...newUniqueUrls];
     });

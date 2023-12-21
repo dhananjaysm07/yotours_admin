@@ -20,6 +20,9 @@ type GetAttractionsQueryResponse = {
 };
 
 const EditAttractionPage = () => {
+  const defaultImg =
+    "https://firebasestorage.googleapis.com/v0/b/marketingform-d32c3.appspot.com/o/bannerImages%2Fbackground.png?alt=media&token=4c357a20-703d-41df-a5e0-b1f1a585a4a1";
+
   const { selectedAttraction } = useDataStore();
   const [attractionTitle, setAttractionTitle] = useState(
     selectedAttraction?.attractionTitle || ""
@@ -36,10 +39,12 @@ const EditAttractionPage = () => {
   const [destinationId, setDestinationId] = useState(
     selectedAttraction?.destination?.id || ""
   );
-  const [attractionBokunId, setAttractionBokunId] = useState(selectedAttraction?.attractionBokunId || "");
+  const [attractionBokunId, setAttractionBokunId] = useState(
+    selectedAttraction?.attractionBokunId || ""
+  );
   const [tagId, setTagId] = useState(selectedAttraction?.tag?.id || "");
   const [attractionImage, setAttractionImage] = useState(
-    selectedAttraction?.images?.[0]?.imageUrl || ""
+    selectedAttraction?.images?.[0]?.imageUrl || defaultImg
   );
 
   const [isUploading, setIsUploading] = useState(false);
@@ -326,7 +331,6 @@ const EditAttractionPage = () => {
               value={attractionBokunId}
               onChange={(e) => setAttractionBokunId(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              
             />
           </div>
           <div className="mb-4">
@@ -342,7 +346,6 @@ const EditAttractionPage = () => {
               value={attractionHyperlink}
               onChange={(e) => setAttractionHyperlink(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              
             />
           </div>
           <div className="mb-4">

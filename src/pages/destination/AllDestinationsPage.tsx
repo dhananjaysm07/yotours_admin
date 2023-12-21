@@ -1,9 +1,7 @@
 // AllDestinationsPage.tsx
 
 import React from "react";
-import  {
-  Destination,
-} from "../../components/destination/destination-card";
+import { Destination } from "../../components/destination/destination-card";
 import { useDataStore } from "../../store/store";
 import { useNavigate } from "react-router";
 import { useData } from "../../context/DataContext";
@@ -13,7 +11,8 @@ const AllDestinationsPage: React.FC = () => {
   const { setSelectedDestination } = useDataStore();
   const navigate = useNavigate();
   if (destinationLoading) return <p>Loading destinations...</p>;
-  if (destinationError) return <p>Error loading destinations: {destinationError.message}</p>;
+  if (destinationError)
+    return <p>Error loading destinations: {destinationError.message}</p>;
   const handleSelectDestination = (destination: Destination) => {
     setSelectedDestination(destination);
     navigate(`/editdestination/${destination.id}`);
@@ -32,7 +31,7 @@ const AllDestinationsPage: React.FC = () => {
               src={destination.bannerImage}
               alt={destination.destinationName}
             />
-            <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white transition-opacity duration-500 ease-in-out bg-black opacity-0 bg-opacity-60 group-hover:opacity-100">
+            <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white transition-opacity duration-500 ease-in-out bg-black  bg-opacity-60 group-hover:opacity-100">
               {destination.destinationName}
             </div>
           </div>

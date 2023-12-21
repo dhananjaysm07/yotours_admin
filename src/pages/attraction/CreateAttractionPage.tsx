@@ -43,7 +43,7 @@ const CreateAttractionPage = () => {
           cache.readQuery<GetAttractionsQueryResponse>({
             query: GET_ATTRACTIONS_QUERY,
           });
-        console.log("existing att", existingAttractions);
+        // console.log("existing att", existingAttractions);
         // Add the new tour to the list
         const newAttractions = existingAttractions
           ? [...existingAttractions.getAttractions, createAttraction]

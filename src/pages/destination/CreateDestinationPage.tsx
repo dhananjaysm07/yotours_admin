@@ -15,6 +15,9 @@ type GetDestinationsQueryResponse = {
 };
 
 const CreateDestinationPage = () => {
+  const defaultImg =
+    "https://firebasestorage.googleapis.com/v0/b/marketingform-d32c3.appspot.com/o/bannerImages%2Fbackground.png?alt=media&token=4c357a20-703d-41df-a5e0-b1f1a585a4a1";
+
   const navigate = useNavigate();
   const [destinationName, setDestinationName] = useState("");
   const [bannerImage, setBannerImage] = useState("");
@@ -76,7 +79,7 @@ const CreateDestinationPage = () => {
             bannerHeading: bannerHeadingToUse,
             isPopular: isPopular,
             description: description,
-            imageUrls: imageUrls,
+            imageUrls: imageUrls.length ? imageUrls : [defaultImg],
             tagId: tagId, // This is the tag ID selected from the dropdown
           },
         },
