@@ -74,6 +74,7 @@ export const GET_TOURS_QUERY = gql`
         id
         name
       }
+      active
     }
   }
 `;

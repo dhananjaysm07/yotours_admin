@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import {
   UPDATE_THING_MUTATION,
+  DELETE_THING_MUTATION,
 } from "../../graphql/mutations";
 import {
   GET_DESTINATIONS_QUERY,
@@ -157,13 +158,64 @@ const EditThingPage = () => {
       setIsUploading(false);
     }
   };
+  const [deleteThing] = useMutation(DELETE_THING_MUTATION, {
+    update(cache, { data: { deleteThing } }) {
+      // Retrieve the current tour list from the cache
+      const existingTours = cache.readQuery<GetThingsQueryResponse>({
+        query: GET_THINGS_QUERY,
+      });
+
+      if (existingTours) {
+        // Filter out the deleted tour from the list
+        const updatedThings = existingTours.getThings.filter(
+          (tour) => tour.id !== deleteThing.id
+        );
+
+        // Write the updated list back to the cache
+        cache.writeQuery({
+          query: GET_THINGS_QUERY,
+          data: { getThings: updatedThings },
+        });
+      }
+    },
+    refetchQueries: [
+      GET_THINGS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
+    ],
+  });
+
+  const handleDeleteThing = async () => {
+    // console.log("ffunction called");
+    try {
+      // Call the deleteTour mutation
+      const res = await deleteThing({
+        variables: {
+          deleteThingId: selectedThing.id,
+        },
+      });
+      console.log("respone", res);
+      if (res?.data?.deleteThing?.id) {
+        navigate("../../allthings");
+      } else {
+        alert("Something went wrong");
+      }
+    } catch (error) {
+      alert("Something went wrong");
+    }
+  };
 
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark">
+      <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark flex justify-between items-center">
         <h3 className="font-semibold text-black dark:text-white ">
           Thing Details
         </h3>
+        <button
+          type="submit"
+          className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
+          onClick={handleDeleteThing}
+        >
+          Delete
+        </button>
       </div>
       <div className="p-6.5">
         <form className="w-full max-w-lg" onSubmit={handleSubmit}>

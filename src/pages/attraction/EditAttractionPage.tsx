@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { UPDATE_ATTRACTION_MUTATION } from "../../graphql/mutations";
+import {
+  UPDATE_ATTRACTION_MUTATION,
+  DELETE_ATTRACTION_MUTATION,
+} from "../../graphql/mutations";
 import {
   GET_ATTRACTIONS_QUERY,
   GET_DESTINATIONS_QUERY,
@@ -178,12 +181,65 @@ const EditAttractionPage = () => {
     }
   };
 
+  const [deleteAttraction] = useMutation(DELETE_ATTRACTION_MUTATION, {
+    update(cache, { data: { deleteAttraction } }) {
+      // Retrieve the current tour list from the cache
+      const existingTours = cache.readQuery<GetAttractionsQueryResponse>({
+        query: GET_ATTRACTIONS_QUERY,
+      });
+
+      if (existingTours) {
+        // Filter out the deleted tour from the list
+        const updateAttractions = existingTours.getAttractions.filter(
+          (tour) => tour.id !== deleteAttraction.id
+        );
+
+        // Write the updated list back to the cache
+        cache.writeQuery({
+          query: GET_ATTRACTIONS_QUERY,
+          data: { getAttractions: updateAttractions },
+        });
+      }
+    },
+    refetchQueries: [
+      GET_ATTRACTIONS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
+    ],
+  });
+
+  const handleDeleteTour = async () => {
+    // console.log("ffunction called");
+    try {
+      // Call the deleteTour mutation
+      const res = await deleteAttraction({
+        variables: {
+          deleteAttractionId: selectedAttraction.id,
+        },
+      });
+      console.log("respone", res);
+      if (res?.data?.deleteAttraction?.id) {
+        navigate("../../allattractions");
+      } else {
+        alert("Something went wrong");
+      }
+    } catch (error) {
+      console.log("error", error);
+      alert("Something went wrong");
+    }
+  };
+
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark">
+      <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark flex justify-between items-center">
         <h3 className="font-semibold text-black dark:text-white ">
           Attraction Details
         </h3>
+        <button
+          type="submit"
+          className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
+          onClick={handleDeleteTour}
+        >
+          Delete
+        </button>
       </div>
       <div className="p-6.5">
         <form className="w-full max-w-lg" onSubmit={handleSubmit}>

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { UPDATE_TOUR_MUTATION } from "../../graphql/mutations";
+import {
+  UPDATE_TOUR_MUTATION,
+  DELETE_TOUR_MUTATION,
+} from "../../graphql/mutations";
 import {
   GET_DESTINATIONS_QUERY,
   GET_TAGS_QUERY,
@@ -23,7 +26,7 @@ const EditTourPage = () => {
   const { selectedTour } = useDataStore();
   const defaultImg =
     "https://firebasestorage.googleapis.com/v0/b/marketingform-d32c3.appspot.com/o/bannerImages%2Fbackground.png?alt=media&token=4c357a20-703d-41df-a5e0-b1f1a585a4a1";
-
+  const navigate = useNavigate();
   const [tourTitle, setTourTitle] = useState(selectedTour?.tourTitle || "");
   const [tourPrice, setTourPrice] = useState(selectedTour?.price || "");
   //add currency state
@@ -50,7 +53,7 @@ const EditTourPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     // If selectedTour changes and has an id, we're no longer loading
@@ -63,6 +66,7 @@ const EditTourPage = () => {
   if (isLoading) {
     return <div>Loading...</div>; // Put your loading spinner or message here
   }
+
   const [updateTour, { data, loading, error }] = useMutation(
     UPDATE_TOUR_MUTATION,
     {
@@ -99,6 +103,50 @@ const EditTourPage = () => {
       ],
     }
   );
+  const [deleteTour] = useMutation(DELETE_TOUR_MUTATION, {
+    update(cache, { data: { deleteTour } }) {
+      // Retrieve the current tour list from the cache
+      const existingTours = cache.readQuery<GetToursQueryResponse>({
+        query: GET_TOURS_QUERY,
+      });
+
+      if (existingTours) {
+        // Filter out the deleted tour from the list
+        const updatedTours = existingTours.getTours.filter(
+          (tour) => tour.id !== deleteTour.id
+        );
+
+        // Write the updated list back to the cache
+        cache.writeQuery({
+          query: GET_TOURS_QUERY,
+          data: { getTours: updatedTours },
+        });
+      }
+    },
+    refetchQueries: [
+      GET_TOURS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
+    ],
+  });
+
+  const handleDeleteTour = async () => {
+    console.log("ffunction called");
+    try {
+      // Call the deleteTour mutation
+      const res = await deleteTour({
+        variables: {
+          deleteTourId: selectedTour.id,
+        },
+      });
+      console.log("respone", res);
+      if (res?.data?.deleteTour?.id) {
+        navigate("../../alltours");
+      } else {
+        alert("Something went wrong");
+      }
+    } catch (error) {
+      alert("Something went wrong");
+    }
+  };
 
   //Destinations
   const {
@@ -178,10 +226,17 @@ const EditTourPage = () => {
 
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark">
+      <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark flex justify-between items-center ">
         <h3 className="font-semibold text-black dark:text-white ">
           Tour Details
         </h3>
+        <button
+          type="submit"
+          className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
+          onClick={handleDeleteTour}
+        >
+          Delete
+        </button>
       </div>
       <div className="p-6.5">
         <form className="w-full max-w-lg" onSubmit={handleSubmit}>

@@ -140,6 +140,13 @@ export const UPDATE_TOUR_MUTATION = gql`
     }
   }
 `;
+export const DELETE_TOUR_MUTATION = gql`
+  mutation DeleteTour($deleteTourId: String!) {
+    deleteTour(id: $deleteTourId) {
+      id
+    }
+  }
+`;
 
 // /ATT
 
@@ -176,6 +183,14 @@ export const UPDATE_ATTRACTION_MUTATION = gql`
   }
 `;
 
+export const DELETE_ATTRACTION_MUTATION = gql`
+  mutation DeleteAttraction($deleteAttractionId: String!) {
+    deleteAttraction(id: $deleteAttractionId) {
+      id
+    }
+  }
+`;
+
 export const CREATE_THING_MUTATION = gql`
   mutation CreateThing($createThingInput: CreateThingInput!) {
     createThing(createThingInput: $createThingInput) {
@@ -202,6 +217,13 @@ export const UPDATE_THING_MUTATION = gql`
         id
         imageUrl
       }
+    }
+  }
+`;
+export const DELETE_THING_MUTATION = gql`
+  mutation DeleteThing($deleteThingId: String!) {
+    deleteThing(id: $deleteThingId) {
+      id
     }
   }
 `;

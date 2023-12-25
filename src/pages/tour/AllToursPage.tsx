@@ -29,6 +29,7 @@ const AllToursPage: React.FC = () => {
   const navigate = useNavigate();
   const { setSelectedTour } = useDataStore();
   const { tourData, tourError, tourLoading } = useData();
+  console.log(tourData);
   if (tourLoading) return <p>Loading tours...</p>;
   if (tourError) return <p>Error loading tours: {tourError.message}</p>;
   // Trigger navigation when the selectedTour changes
