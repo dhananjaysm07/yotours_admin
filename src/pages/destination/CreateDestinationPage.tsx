@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { CREATE_DESTINATION_MUTATION } from "../../graphql/mutations";
 import DestinationPhotos from "../../components/settings/destination-photos";
@@ -10,6 +10,10 @@ import { Country, countryData } from "../../utils/countries";
 import { useNavigate } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
 
+export type BestTime = {
+  fromDate: string;
+  toDate: string;
+};
 type GetDestinationsQueryResponse = {
   getDestinations: Destination[]; // Assuming `Tag` is the type of your tags
 };
@@ -33,7 +37,12 @@ const CreateDestinationPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [showErrorModal, setShowErrorModal] = useState(false);
-
+  const [bestTime, setBestTime] = useState<BestTime>({
+    fromDate: "",
+    toDate: "",
+  });
+  const [fromOccasion, setFromOccasion] = useState("");
+  const [toOccasion, setToOccasion] = useState("");
   const [createDestination, { data, loading, error }] = useMutation(
     CREATE_DESTINATION_MUTATION,
     {
@@ -81,6 +90,10 @@ const CreateDestinationPage = () => {
             description: description,
             imageUrls: imageUrls.length ? imageUrls : [defaultImg],
             tagId: tagId, // This is the tag ID selected from the dropdown
+            fromDate:bestTime.fromDate,
+            toDate:bestTime.toDate,
+            fromOccasion:fromOccasion,
+            toOccasion:toOccasion
           },
         },
       });
@@ -146,6 +159,33 @@ const CreateDestinationPage = () => {
     setSelectedCountry(e.target.value);
   };
 
+  const handleDateChange = (
+    field: keyof BestTime,
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    setBestTime((prevBestTime) => ({
+      ...prevBestTime,
+      [field]: e.target.value,
+    }));
+  };
+
+  
+  const getCurrentDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    let month = (now.getMonth() + 1).toString();
+    let day = now.getDate().toString();
+
+    if (month.length === 1) {
+      month = "0" + month; // Add leading zero if month is single digit
+    }
+
+    if (day.length === 1) {
+      day = "0" + day; // Add leading zero if day is single digit
+    }
+
+    return `${year}-${month}-${day}`;
+  };
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark">
@@ -279,6 +319,59 @@ const CreateDestinationPage = () => {
               <p className="text-xs italic text-red-500">{tagsError.message}</p>
             )}
           </div>
+          <div className="mb-4">
+            <label
+              htmlFor="besttime"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Best time to visit
+            </label>
+            <DateInput
+              required={false}
+              label="From Date"
+              value={bestTime.fromDate || ""}
+              minDate={getCurrentDate()}
+              onChange={(e) => handleDateChange("fromDate", e)}
+            />
+            <div className="mb-4">
+            <label
+              htmlFor="fromOccasion"
+              className="block mb-2 text-sm font-medium text-gray-700"
+            >
+              From Occasion
+            </label>
+            <input
+              type="text"
+              id="fromOccasion"
+              value={fromOccasion}
+              onChange={(e) => setFromOccasion(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            />
+          </div>
+          
+            <DateInput
+              required={false}
+              label="To Date"
+              value={bestTime.toDate || ""}
+              minDate={getCurrentDate()}
+              onChange={(e) => handleDateChange("toDate", e)}
+            />
+            <div className="mb-4">
+            <label
+              htmlFor="toOccasion"
+              className="block mb-2 text-sm font-medium text-gray-700"
+            >
+             To Occasion
+            </label>
+            <input
+              type="text"
+              id="toOccasion"
+              value={toOccasion}
+              onChange={(e) => setToOccasion(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            />
+          </div>
+          </div>
           <div>
             <DestinationPhotos onPhotosChange={handlePhotosChange} />
           </div>
@@ -298,5 +391,31 @@ const CreateDestinationPage = () => {
     </div>
   );
 };
+
+export const DateInput = ({
+  label,
+  value,
+  required,
+  minDate,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  required?: boolean;
+  minDate: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}) => (
+  <div>
+    <label>{label}</label>
+    <input
+      type="date"
+      required={required}
+      value={value}
+      min={minDate}
+      className="custom-input-date w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+      onChange={onChange}
+    />
+  </div>
+);
 
 export default CreateDestinationPage;

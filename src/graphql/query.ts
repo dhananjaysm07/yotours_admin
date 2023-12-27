@@ -47,6 +47,10 @@ export const GET_DESTINATIONS_QUERY = gql`
         id
         name
       }
+      fromDate
+      toDate
+      fromOccasion
+      toOccasion
     }
   }
 `;

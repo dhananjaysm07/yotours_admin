@@ -61,6 +61,10 @@ export const useDataStore = create<DataStore>((set) => ({
       id: "",
       name: "",
     },
+    fromDate:"",
+    fromOccasion:"",
+    toDate:"",
+    toOccasion:""
   },
   selectedAttraction: {
     id: "",
