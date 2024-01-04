@@ -21,6 +21,10 @@ export interface Destination {
     id: string;
     name: string;
   };
+  fromDate:string
+  toDate:string
+  fromOccasion:string
+  toOccasion:string
 }
 
 interface DestinationCardProps {
