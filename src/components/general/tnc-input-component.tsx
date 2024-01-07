@@ -3,11 +3,12 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 type tncComponentProps = {
-  setTnc: React.Dispatch<React.SetStateAction<string>>;
-  tnc: string;
+  setText: React.Dispatch<React.SetStateAction<string>>;
+  text: string;
+  heading: string;
 };
 
-const TncComponent = ({ setTnc, tnc }: tncComponentProps) => {
+const TncComponent = ({ setText, text, heading }: tncComponentProps) => {
   const modules = {
     toolbar: [
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -45,21 +46,19 @@ const TncComponent = ({ setTnc, tnc }: tncComponentProps) => {
     source: string,
     editor: any
   ) => {
-    setTnc(content);
+    setText(content);
   };
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="border-b bg-gray-3 dark:bg-graydark border-stroke py-4 px-6.5 dark:border-strokedark flex items-center">
-        <h3 className="font-semibold text-black dark:text-white">
-          Terms and Conditions
-        </h3>
+        <h3 className="font-semibold text-black dark:text-white">{heading}</h3>
       </div>
       <div>
         <ReactQuill
           theme="snow"
           modules={modules}
           formats={formats}
-          value={tnc || ""}
+          value={text || ""}
           onChange={handleProcedureContentChange}
         />
       </div>

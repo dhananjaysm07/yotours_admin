@@ -65,7 +65,7 @@ const ContentPage = () => {
         socialLinks,
         tnc,
         bokunChannelId,
-        privacy
+        privacy,
       } = contentData.getContent;
       setHeroHeading(heroHeading || "");
       setHeroImage(heroImage || "");
@@ -404,7 +404,11 @@ const ContentPage = () => {
               </button>
             </div>
           </div>
-          <TncComponent setTnc={setTnc} tnc={tnc} />
+          <TncComponent
+            setText={setTnc}
+            text={tnc}
+            heading={"Terms and Condition"}
+          />
           <PrivacyComponent setPrivacy={setPrivacy} privacy={privacy} />
 
           <div className="mb-4">

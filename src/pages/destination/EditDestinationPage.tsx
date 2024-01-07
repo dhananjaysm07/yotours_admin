@@ -16,6 +16,7 @@ import app from "../../utils/firebase";
 import { ErrorModal } from "../../components/common/ErrorModal";
 import { useNavigate } from "react-router";
 import { BestTime, DateInput } from "./CreateDestinationPage";
+import TncComponent from "../../components/general/tnc-input-component";
 
 type GetDestinationsQueryResponse = {
   getDestinations: Destination[]; // Assuming `Tag` is the type of your tags
@@ -53,6 +54,9 @@ const EditDestinationPage = () => {
   );
   const [countries, setCountries] = useState<Country[]>([]);
   const [isPopular, setIsPopular] = useState(selectedDestination?.isPopular);
+  const [introduction, setIntroduction] = useState(
+    selectedDestination.introduction
+  );
 
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(!selectedDestination.id);
@@ -65,8 +69,12 @@ const EditDestinationPage = () => {
     fromDate: selectedDestination.fromDate || "",
     toDate: selectedDestination.toDate || "",
   });
-  const [fromOccasion, setFromOccasion] = useState(selectedDestination.fromOccasion || "");
-  const [toOccasion, setToOccasion] = useState(selectedDestination.toOccasion || "");
+  const [fromOccasion, setFromOccasion] = useState(
+    selectedDestination.fromOccasion || ""
+  );
+  const [toOccasion, setToOccasion] = useState(
+    selectedDestination.toOccasion || ""
+  );
   useEffect(() => {
     // If selectedTour changes and has an id, we're no longer loading
     if (selectedDestination.id) {
@@ -161,11 +169,12 @@ const EditDestinationPage = () => {
             bannerHeading: bannerHeading,
             description: description,
             imageUrls: imageUrls,
-            tagId: tagId, 
-            fromDate:bestTime.fromDate,
-            toDate:bestTime.toDate,
-            fromOccasion:fromOccasion,
-            toOccasion:toOccasion
+            tagId: tagId,
+            fromDate: bestTime.fromDate,
+            toDate: bestTime.toDate,
+            fromOccasion: fromOccasion,
+            toOccasion: toOccasion,
+            introduction: introduction,
           },
         },
       });
@@ -249,7 +258,6 @@ const EditDestinationPage = () => {
     setBannerHeading(newTitle);
   };
 
-  
   const handleDateChange = (
     field: keyof BestTime,
     e: ChangeEvent<HTMLInputElement>
@@ -260,7 +268,6 @@ const EditDestinationPage = () => {
     }));
   };
 
-  
   const getCurrentDate = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -466,21 +473,21 @@ const EditDestinationPage = () => {
               onChange={(e) => handleDateChange("fromDate", e)}
             />
             <div className="mb-4">
-            <label
-              htmlFor="fromOccasion"
-              className="block mb-2 text-sm font-medium text-gray-700"
-            >
-              From Occasion
-            </label>
-            <input
-              type="text"
-              id="fromOccasion"
-              value={fromOccasion}
-              onChange={(e) => setFromOccasion(e.target.value)}
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-            />
-          </div>
-          
+              <label
+                htmlFor="fromOccasion"
+                className="block mb-2 text-sm font-medium text-gray-700"
+              >
+                From Occasion
+              </label>
+              <input
+                type="text"
+                id="fromOccasion"
+                value={fromOccasion}
+                onChange={(e) => setFromOccasion(e.target.value)}
+                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              />
+            </div>
+
             <DateInput
               required={false}
               label="To Date"
@@ -489,21 +496,26 @@ const EditDestinationPage = () => {
               onChange={(e) => handleDateChange("toDate", e)}
             />
             <div className="mb-4">
-            <label
-              htmlFor="toOccasion"
-              className="block mb-2 text-sm font-medium text-gray-700"
-            >
-             To Occasion
-            </label>
-            <input
-              type="text"
-              id="toOccasion"
-              value={toOccasion}
-              onChange={(e) => setToOccasion(e.target.value)}
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-            />
+              <label
+                htmlFor="toOccasion"
+                className="block mb-2 text-sm font-medium text-gray-700"
+              >
+                To Occasion
+              </label>
+              <input
+                type="text"
+                id="toOccasion"
+                value={toOccasion}
+                onChange={(e) => setToOccasion(e.target.value)}
+                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              />
+            </div>
           </div>
-          </div>
+          <TncComponent
+            setText={setIntroduction}
+            text={introduction}
+            heading="Introduction"
+          />
           <div>
             <DestinationPhotos onPhotosChange={handlePhotosChange} />
           </div>

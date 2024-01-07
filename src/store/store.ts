@@ -61,10 +61,11 @@ export const useDataStore = create<DataStore>((set) => ({
       id: "",
       name: "",
     },
-    fromDate:"",
-    fromOccasion:"",
-    toDate:"",
-    toOccasion:""
+    fromDate: "",
+    fromOccasion: "",
+    toDate: "",
+    toOccasion: "",
+    introduction: "",
   },
   selectedAttraction: {
     id: "",
@@ -87,7 +88,7 @@ export const useDataStore = create<DataStore>((set) => ({
   selectedThing: {
     id: "",
     thingDescription: "",
-    thingHyperlink:"",
+    thingHyperlink: "",
     thingTitle: "",
     destination: {
       id: "",
@@ -104,6 +105,5 @@ export const useDataStore = create<DataStore>((set) => ({
     set({ selectedDestination: destination }),
   setSelectedAttraction: (attraction) =>
     set({ selectedAttraction: attraction }),
-  setSelectedThing: (thing) =>
-    set({ selectedThing: thing }),
+  setSelectedThing: (thing) => set({ selectedThing: thing }),
 }));

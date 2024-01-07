@@ -51,6 +51,7 @@ export const GET_DESTINATIONS_QUERY = gql`
       toDate
       fromOccasion
       toOccasion
+      introduction
     }
   }
 `;

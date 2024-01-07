@@ -9,6 +9,7 @@ import { Destination } from "../../components/destination/destination-card";
 import { Country, countryData } from "../../utils/countries";
 import { useNavigate } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
+import TncComponent from "../../components/general/tnc-input-component";
 
 export type BestTime = {
   fromDate: string;
@@ -43,6 +44,7 @@ const CreateDestinationPage = () => {
   });
   const [fromOccasion, setFromOccasion] = useState("");
   const [toOccasion, setToOccasion] = useState("");
+  const [introduction, setIntroduction] = useState("");
   const [createDestination, { data, loading, error }] = useMutation(
     CREATE_DESTINATION_MUTATION,
     {
@@ -90,10 +92,11 @@ const CreateDestinationPage = () => {
             description: description,
             imageUrls: imageUrls.length ? imageUrls : [defaultImg],
             tagId: tagId, // This is the tag ID selected from the dropdown
-            fromDate:bestTime.fromDate,
-            toDate:bestTime.toDate,
-            fromOccasion:fromOccasion,
-            toOccasion:toOccasion
+            fromDate: bestTime.fromDate,
+            toDate: bestTime.toDate,
+            fromOccasion: fromOccasion,
+            toOccasion: toOccasion,
+            introduction: introduction,
           },
         },
       });
@@ -169,7 +172,6 @@ const CreateDestinationPage = () => {
     }));
   };
 
-  
   const getCurrentDate = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -334,21 +336,21 @@ const CreateDestinationPage = () => {
               onChange={(e) => handleDateChange("fromDate", e)}
             />
             <div className="mb-4">
-            <label
-              htmlFor="fromOccasion"
-              className="block mb-2 text-sm font-medium text-gray-700"
-            >
-              From Occasion
-            </label>
-            <input
-              type="text"
-              id="fromOccasion"
-              value={fromOccasion}
-              onChange={(e) => setFromOccasion(e.target.value)}
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-            />
-          </div>
-          
+              <label
+                htmlFor="fromOccasion"
+                className="block mb-2 text-sm font-medium text-gray-700"
+              >
+                From Occasion
+              </label>
+              <input
+                type="text"
+                id="fromOccasion"
+                value={fromOccasion}
+                onChange={(e) => setFromOccasion(e.target.value)}
+                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              />
+            </div>
+
             <DateInput
               required={false}
               label="To Date"
@@ -357,21 +359,26 @@ const CreateDestinationPage = () => {
               onChange={(e) => handleDateChange("toDate", e)}
             />
             <div className="mb-4">
-            <label
-              htmlFor="toOccasion"
-              className="block mb-2 text-sm font-medium text-gray-700"
-            >
-             To Occasion
-            </label>
-            <input
-              type="text"
-              id="toOccasion"
-              value={toOccasion}
-              onChange={(e) => setToOccasion(e.target.value)}
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-            />
+              <label
+                htmlFor="toOccasion"
+                className="block mb-2 text-sm font-medium text-gray-700"
+              >
+                To Occasion
+              </label>
+              <input
+                type="text"
+                id="toOccasion"
+                value={toOccasion}
+                onChange={(e) => setToOccasion(e.target.value)}
+                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              />
+            </div>
           </div>
-          </div>
+          <TncComponent
+            heading={"Introduction"}
+            setText={setIntroduction}
+            text={introduction}
+          />
           <div>
             <DestinationPhotos onPhotosChange={handlePhotosChange} />
           </div>
