@@ -19,6 +19,11 @@ export interface Content {
   footerlinks: string[];
   footerLogo: string;
   sociallinks: string[];
+  tnc:string;
+  privacy:string;
+  bokunChannelId:string;
+  leftDiscountImage:string;
+  rightDiscountImage:string;
 }
 type GetContentQueryResponse = {
   getContent: Content;
@@ -42,6 +47,8 @@ const ContentPage = () => {
   const [bokunChannelId, setBokunChannelId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [leftDiscountImage, setLeftDiscountImage] = useState("");
+  const [rightDiscountImage, setRightDiscountImage] = useState("");
   const navigate = useNavigate();
 
   // Queries
@@ -66,6 +73,8 @@ const ContentPage = () => {
         tnc,
         bokunChannelId,
         privacy,
+        leftDiscountImage,
+        rightDiscountImage
       } = contentData.getContent;
       setHeroHeading(heroHeading || "");
       setHeroImage(heroImage || "");
@@ -76,6 +85,8 @@ const ContentPage = () => {
       setTnc(tnc || "");
       setPrivacy(privacy || "");
       setBokunChannelId(bokunChannelId || "");
+      setLeftDiscountImage(leftDiscountImage||"");
+      setRightDiscountImage(rightDiscountImage||"");
     }
   }, [contentData]);
   // Mutations
@@ -118,6 +129,8 @@ const ContentPage = () => {
       tnc: tnc,
       privacy: privacy,
       bokunChannelId: bokunChannelId,
+      leftDiscountImage:leftDiscountImage,
+      rightDiscountImage:rightDiscountImage
 
       // include other fields as needed
     };
@@ -224,6 +237,56 @@ const ContentPage = () => {
       await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(storageRef);
       setFooterLogo(downloadURL);
+    } catch (error) {
+      console.error("Error uploading banner image", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleLeftDiscountImage = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (!file) return;
+
+    const maxSize = 2 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      alert("File size should not exceed 2MB.");
+      return;
+    }
+    const storageRef = ref(storage, `leftdiscount/${file.name}`);
+    try {
+      setIsUploading(true);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      setLeftDiscountImage(downloadURL);
+    } catch (error) {
+      console.error("Error uploading banner image", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRightDiscountImage = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (!file) return;
+
+    const maxSize = 2 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      alert("File size should not exceed 2MB.");
+      return;
+    }
+    const storageRef = ref(storage, `rightdiscount/${file.name}`);
+    try {
+      setIsUploading(true);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      setRightDiscountImage(downloadURL);
     } catch (error) {
       console.error("Error uploading banner image", error);
     } finally {
@@ -427,6 +490,84 @@ const ContentPage = () => {
               required
             />
           </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="leftDiscountBanner"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Left Discount Banner
+            </label>
+
+            <div className="flex items-center space-x-2">
+              {leftDiscountImage && (
+                <div className="relative flex justify-center w-full">
+                  <img
+                    src={leftDiscountImage}
+                    alt="Left Discount Banner"
+                    className="object-cover h-40 rounded-md shadow-md"
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 cursor-pointer"
+                  >
+                    Change
+                  </label>
+                </div>
+              )}
+              <input
+                id="file-upload"
+                type="file"
+                className={leftDiscountImage ? "hidden" : ""}
+                onChange={handleLeftDiscountImage}
+                accept="image/*"
+              />
+              {isUploading && (
+                <div className="flex items-center justify-center">
+                  <div className="w-4 h-4 border-2 border-t-2 border-gray-200 rounded-full border-t-blue-600 animate-spin"></div>
+                  <span className="text-sm text-gray-500">Uploading...</span>
+                </div>
+              )}
+            </div>
+            </div>
+            <div className="mb-4">
+            <label
+              htmlFor="leftDiscountBanner"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Right Discount Banner
+            </label>
+            <div className="flex items-center space-x-2">
+              {rightDiscountImage && (
+                <div className="relative flex justify-center w-full">
+                  <img
+                    src={rightDiscountImage}
+                    alt="Right Discount Image"
+                    className="object-cover h-40 rounded-md shadow-md"
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 cursor-pointer"
+                  >
+                    Change
+                  </label>
+                </div>
+              )}
+              <input
+                id="file-upload"
+                type="file"
+                className={rightDiscountImage ? "hidden" : ""}
+                onChange={handleRightDiscountImage}
+                accept="image/*"
+              />
+              {isUploading && (
+                <div className="flex items-center justify-center">
+                  <div className="w-4 h-4 border-2 border-t-2 border-gray-200 rounded-full border-t-blue-600 animate-spin"></div>
+                  <span className="text-sm text-gray-500">Uploading...</span>
+                </div>
+              )}
+            </div>
+            </div>
           <button
             type="submit"
             className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"

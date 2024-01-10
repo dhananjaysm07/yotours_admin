@@ -163,17 +163,19 @@ export const GET_THINGS_QUERY = gql`
 //Get content Query
 export const GET_CONTENT_QUERY = gql`
   query GetContent {
-    getContent {
-      id
-      heroHeading
-      heroSubheading
-      heroImage
-      footerLinks
-      footerLogo
-      socialLinks
-      tnc
-      # privacy
-      bokunChannelId
-    }
+  getContent {
+    id
+    heroHeading
+    heroSubheading
+    heroImage
+    footerLinks
+    footerLogo
+    socialLinks
+    tnc
+    privacy
+    bokunChannelId
+    leftDiscountImage
+    rightDiscountImage
   }
+}
 `;
