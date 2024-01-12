@@ -261,6 +261,7 @@ const ContentPage = () => {
       setIsUploading(true);
       await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(storageRef);
+      console.log("this is left hero image",heroImage);
       setLeftDiscountImage(downloadURL);
     } catch (error) {
       console.error("Error uploading banner image", error);
@@ -348,7 +349,7 @@ const ContentPage = () => {
                     className="object-cover h-40 rounded-md shadow-md"
                   />
                   <label
-                    htmlFor="file-upload"
+                    htmlFor="heroimage"
                     className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 cursor-pointer"
                   >
                     Change
@@ -356,7 +357,7 @@ const ContentPage = () => {
                 </div>
               )}
               <input
-                id="file-upload"
+                id="heroimage"
                 type="file"
                 className={heroImage ? "hidden" : ""}
                 onChange={handleBannerUpload}
@@ -383,7 +384,7 @@ const ContentPage = () => {
                     className="object-cover h-40 rounded-md shadow-md"
                   />
                   <label
-                    htmlFor="file-upload"
+                    htmlFor="footerlogo"
                     className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 cursor-pointer"
                   >
                     Change
@@ -391,7 +392,7 @@ const ContentPage = () => {
                 </div>
               )}
               <input
-                id="file-upload"
+                id="footerlogo"
                 type="file"
                 className={footerLogo ? "hidden" : ""}
                 onChange={handleFooterImage}
@@ -508,7 +509,7 @@ const ContentPage = () => {
                     className="object-cover h-40 rounded-md shadow-md"
                   />
                   <label
-                    htmlFor="file-upload"
+                    htmlFor="leftdiscount"
                     className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 cursor-pointer"
                   >
                     Change
@@ -516,7 +517,7 @@ const ContentPage = () => {
                 </div>
               )}
               <input
-                id="file-upload"
+                id="leftdiscount"
                 type="file"
                 className={leftDiscountImage ? "hidden" : ""}
                 onChange={handleLeftDiscountImage}
@@ -546,7 +547,7 @@ const ContentPage = () => {
                     className="object-cover h-40 rounded-md shadow-md"
                   />
                   <label
-                    htmlFor="file-upload"
+                    htmlFor="rightdiscount"
                     className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 cursor-pointer"
                   >
                     Change
@@ -554,7 +555,7 @@ const ContentPage = () => {
                 </div>
               )}
               <input
-                id="file-upload"
+                id="rightdiscount"
                 type="file"
                 className={rightDiscountImage ? "hidden" : ""}
                 onChange={handleRightDiscountImage}
