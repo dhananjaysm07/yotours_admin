@@ -284,6 +284,8 @@ const EditDestinationPage = () => {
 
     return `${year}-${month}-${day}`;
   };
+
+  
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark">
