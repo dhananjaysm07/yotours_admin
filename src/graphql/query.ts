@@ -173,6 +173,8 @@ export const GET_CONTENT_QUERY = gql`
     socialLinks
     tnc
     privacy
+    about
+    agent
     bokunChannelId
     leftDiscountImage
     rightDiscountImage

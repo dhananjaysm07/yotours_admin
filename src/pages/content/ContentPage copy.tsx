@@ -13,7 +13,6 @@ import { BsTrash2 } from "react-icons/bs";
 import TncComponent from "../../components/general/tnc-input-component";
 import PrivacyComponent from "../../components/general/privacy-input-component";
 import AboutUsComponent from "../../components/general/about-input-component";
-import AgentComponent from "../../components/general/agent-input-component";
 export interface Content {
   id: string;
   heroHeading: string;
@@ -21,13 +20,11 @@ export interface Content {
   footerlinks: string[];
   footerLogo: string;
   sociallinks: string[];
-  tnc: string;
-  privacy: string;
-  about:string;
-  agent:string;
-  bokunChannelId: string;
-  leftDiscountImage: string;
-  rightDiscountImage: string;
+  tnc:string;
+  privacy:string;
+  bokunChannelId:string;
+  leftDiscountImage:string;
+  rightDiscountImage:string;
 }
 type GetContentQueryResponse = {
   getContent: Content;
@@ -42,9 +39,7 @@ const ContentPage = () => {
   const [heroImage, setHeroImage] = useState("");
   const [tnc, setTnc] = useState("");
   const [privacy, setPrivacy] = useState("");
-  const [about, setAbout] = useState("");
-  const [agent, setAgent] = useState("");
-
+  const [about, setAbout] = useState("")
   const [footerLogo, setFooterLogo] = useState("");
   const [footerLinks, setFooterLinks] = useState([""]);
   const [socialLinks, setSocialLinks] = useState([""]);
@@ -80,10 +75,8 @@ const ContentPage = () => {
         tnc,
         bokunChannelId,
         privacy,
-        about,
-        agent,
         leftDiscountImage,
-        rightDiscountImage,
+        rightDiscountImage
       } = contentData.getContent;
       setHeroHeading(heroHeading || "");
       setHeroImage(heroImage || "");
@@ -94,8 +87,8 @@ const ContentPage = () => {
       setTnc(tnc || "");
       setPrivacy(privacy || "");
       setBokunChannelId(bokunChannelId || "");
-      setLeftDiscountImage(leftDiscountImage || "");
-      setRightDiscountImage(rightDiscountImage || "");
+      setLeftDiscountImage(leftDiscountImage||"");
+      setRightDiscountImage(rightDiscountImage||"");
     }
   }, [contentData]);
   // Mutations
@@ -137,11 +130,9 @@ const ContentPage = () => {
       socialLinks: socialLinks,
       tnc: tnc,
       privacy: privacy,
-      about:about,
-      agent:agent,
       bokunChannelId: bokunChannelId,
-      leftDiscountImage: leftDiscountImage,
-      rightDiscountImage: rightDiscountImage,
+      leftDiscountImage:leftDiscountImage,
+      rightDiscountImage:rightDiscountImage
 
       // include other fields as needed
     };
@@ -272,7 +263,7 @@ const ContentPage = () => {
       setIsUploading(true);
       await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(storageRef);
-      console.log("this is left hero image", heroImage);
+      console.log("this is left hero image",heroImage);
       setLeftDiscountImage(downloadURL);
     } catch (error) {
       console.error("Error uploading banner image", error);
@@ -485,8 +476,8 @@ const ContentPage = () => {
             heading={"Terms and Condition"}
           />
           <PrivacyComponent setPrivacy={setPrivacy} privacy={privacy} />
-          <AboutUsComponent setAbout={setAbout} about={about} />
-          <AgentComponent setAgent={setAgent} agent={agent} />
+          <AboutUsComponent setAbout={setAbout} about={about}/>
+
           <div className="mb-4">
             <label
               htmlFor="bokunChannelId"
@@ -542,8 +533,8 @@ const ContentPage = () => {
                 </div>
               )}
             </div>
-          </div>
-          <div className="mb-4">
+            </div>
+            <div className="mb-4">
             <label
               htmlFor="leftDiscountBanner"
               className="block mb-2 text-sm font-bold text-gray-700"
@@ -580,7 +571,7 @@ const ContentPage = () => {
                 </div>
               )}
             </div>
-          </div>
+            </div>
           <button
             type="submit"
             className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"

@@ -28,7 +28,7 @@ import ContentPage from "./pages/content/ContentPage";
 function App() {
   //page refresh at any location is leading me to root page
   const [loading, setLoading] = useState<boolean>(true);
-  console.log(import.meta.env.VITE_API_KEY);
+  // console.log(import.meta.env.VITE_API_KEY);
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);

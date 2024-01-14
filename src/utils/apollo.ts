@@ -8,7 +8,7 @@ import { GET_PACKAGES } from "../graphql/query";
 
 const token =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlcyI6WyJVc2VyIiwiQWRtaW4iXSwic3ViIjoiNjZhOGY5ZmUtZmZkOS00NmRmLWE0YzItMDE4OWU4YzRjODc3IiwidXNlcm5hbWUiOiJ5b2FkbWluIiwiaWF0IjoxNjk4OTMwMTQ5LCJleHAiOjE2OTkwMDIxNDl9.gQ0amex3lKQdMtPNIbjSX-45PeVio6nDIwvnwMTmqDQ";
-console.log(token);
+// console.log(token);
 const authLink = new ApolloLink((operation, forward) => {
   // Use the setContext method to set the HTTP headers.
   operation.setContext({
