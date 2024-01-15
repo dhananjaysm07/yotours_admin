@@ -93,6 +93,8 @@ const ContentPage = () => {
       setSocialLinks(socialLinks || []);
       setTnc(tnc || "");
       setPrivacy(privacy || "");
+      setAbout(about || "");
+      setAgent(agent || "")
       setBokunChannelId(bokunChannelId || "");
       setLeftDiscountImage(leftDiscountImage || "");
       setRightDiscountImage(rightDiscountImage || "");
