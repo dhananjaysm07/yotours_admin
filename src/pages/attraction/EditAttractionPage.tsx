@@ -168,7 +168,10 @@ const EditAttractionPage = () => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) return;
 
-    const storageRef = ref(storage, `attractionImages/${file.name}`);
+    const uniqueId = new Date().getTime() + '_' + Math.random().toString(36).slice(2, 11);
+    const fileNamePrefix = attractionTitle.trim() ? attractionTitle.replace(/[^a-zA-Z0-9]/g, '_') : `attraction_${uniqueId}`;
+    const fileName = `${fileNamePrefix}_${file.name}`;
+    const storageRef = ref(storage, `attractionImages/${fileName}`);
     try {
       setIsUploading(true);
       await uploadBytes(storageRef, file);
