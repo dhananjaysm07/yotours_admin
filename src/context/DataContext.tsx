@@ -3,9 +3,12 @@ import React, { useContext, createContext } from "react";
 import { useQuery, QueryResult } from "@apollo/client";
 import {
   GET_ATTRACTIONS_QUERY,
-  GET_DESTINATIONS_QUERY,
+  // GET_DESTINATIONS_QUERY,
+  GET_FILTERED_ATTRACTIONs,
+  GET_FILTERED_DESTINATION,
+  GET_FILTERED_TOURS,
   GET_THINGS_QUERY,
-  GET_TOURS_QUERY,
+  // GET_TOURS_QUERY,
 } from "../graphql/query";
 import { Destination } from "../components/destination/destination-card";
 import { Tour } from "../pages/tour/AllToursPage";
@@ -13,21 +16,45 @@ import { Attraction } from "../pages/attraction/AllAttractionsPage";
 import { Thing } from "../pages/thing/AllThingsPage";
 
 interface IDataContext {
-  destinationData: {
-    getDestinations: Destination[];
+  // destinationData: {
+  //   getDestinations: Destination[];
+  // };
+  // destinationError: any;
+  // destinationLoading: boolean;
+  destinationFilteredData: {
+    getFilteredDestination: {
+      destinations: Destination[];
+      totalCount: number;
+    };
   };
-  destinationError: any;
-  destinationLoading: boolean;
-  tourData: {
-    getTours: Tour[];
+  destinationFilteredError: any;
+  destinationFilteredLoading: boolean;
+  refetchFilteredDestination: any;
+  // tourData: {
+  //   getTours: Tour[];
+  // };
+  // tourLoading: boolean;
+  // tourError: any;
+  tourFilteredData: {
+    getFilteredTours: {
+      tours: Tour[];
+      totalCount: number;
+    };
   };
-  tourLoading: boolean;
-  tourError: any;
+  tourFilteredLoading: boolean;
+  tourFilteredError: any;
+  refetch: any;
   attractionData: {
     getAttractions: Attraction[];
   };
   attractionLoading: boolean;
   attractionError: any;
+  attractionFilteredData: {
+    getAttractions: Attraction[];
+  };
+  attractionFilteredLoading: boolean;
+  attractionFilteredError: any;
+  refetchAttraction: any;
   thingData: {
     getThings: Thing[];
   };
@@ -42,16 +69,16 @@ interface Props {
 }
 
 export const DataProvider = ({ children }: Props) => {
-  const {
-    loading: destinationLoading,
-    error: destinationError,
-    data: destinationData,
-  }: QueryResult = useQuery(GET_DESTINATIONS_QUERY);
-  const {
-    loading: tourLoading,
-    error: tourError,
-    data: tourData,
-  }: QueryResult = useQuery(GET_TOURS_QUERY);
+  // const {
+  //   loading: destinationLoading,
+  //   error: destinationError,
+  //   data: destinationData,
+  // }: QueryResult = useQuery(GET_DESTINATIONS_QUERY);
+  // const {
+  //   loading: tourLoading,
+  //   error: tourError,
+  //   data: tourData,
+  // }: QueryResult = useQuery(GET_TOURS_QUERY);
   const {
     loading: attractionLoading,
     error: attractionError,
@@ -64,19 +91,91 @@ export const DataProvider = ({ children }: Props) => {
     data: thingData,
   }: QueryResult = useQuery(GET_THINGS_QUERY);
 
+  const {
+    loading: destinationFilteredLoading,
+    error: destinationFilteredError,
+    data: destinationFilteredData,
+    refetch: refetchFilteredDestination,
+  } = useQuery(GET_FILTERED_DESTINATION, {
+    variables: {
+      page: 0,
+      loadCount: 0,
+      filter: {
+        priceMin: null,
+        startDate: null,
+        priceMax: null,
+        location: null,
+        endDate: null,
+        tagName: [],
+        continent: [],
+      },
+    },
+  });
+  const {
+    loading: tourFilteredLoading,
+    error: tourFilteredError,
+    data: tourFilteredData,
+    refetch,
+  } = useQuery(GET_FILTERED_TOURS, {
+    variables: {
+      page: 0,
+      loadCount: 0,
+      filter: {
+        priceMin: null,
+        startDate: null,
+        priceMax: null,
+        location: null,
+        endDate: null,
+        tagName: [],
+        continent: [],
+      },
+    },
+  });
+  const {
+    loading: attractionFilteredLoading,
+    error: attractionFilteredError,
+    data: attractionFilteredData,
+    refetch: refetchAttraction,
+  } = useQuery(GET_FILTERED_ATTRACTIONs, {
+    variables: {
+      page: 0,
+      loadCount: 0,
+      filter: {
+        priceMin: null,
+        startDate: null,
+        priceMax: null,
+        location: null,
+        endDate: null,
+        tagName: [],
+        continent: [],
+      },
+    },
+  });
   const contextValue: IDataContext = {
-    destinationData,
-    destinationError,
-    destinationLoading,
-    tourData,
-    tourLoading,
-    tourError,
+    // destinationData,
+    // destinationError,
+    // destinationLoading,
+    // tourData,
+    // tourLoading,
+    // tourError,
     attractionData,
     attractionLoading,
     attractionError,
     thingData,
     thingLoading,
     thingError,
+    destinationFilteredLoading,
+    destinationFilteredError,
+    destinationFilteredData,
+    refetchFilteredDestination,
+    refetch,
+    tourFilteredData,
+    tourFilteredError,
+    tourFilteredLoading,
+    refetchAttraction,
+    attractionFilteredData,
+    attractionFilteredError,
+    attractionFilteredLoading,
   };
 
   return (

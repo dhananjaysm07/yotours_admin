@@ -5,19 +5,18 @@ import { useData } from "../context/DataContext";
 const Dashboard = () => {
   const {
     attractionData,
-    attractionError,
     attractionLoading,
-    destinationData,
-    destinationError,
-    destinationLoading,
+    destinationFilteredData,
+    destinationFilteredLoading,
+    tourFilteredData,
+    tourFilteredLoading,
     tourData,
-    tourError,
-    tourLoading,
   } = useData();
 
   console.log(tourData);
   //add loading if condition
-  if(attractionLoading || destinationLoading || tourLoading) return <div>Loading...</div>
+  if (attractionLoading || destinationFilteredLoading || tourFilteredLoading)
+    return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -46,7 +45,10 @@ const Dashboard = () => {
                     </dt>
                     <dd className="flex items-baseline">
                       <div className="text-2xl font-semibold leading-8 text-gray-900">
-                        {destinationData?.getDestinations.length}
+                        {
+                          destinationFilteredData?.getFilteredDestination
+                            ?.totalCount
+                        }
                       </div>
                     </dd>
                   </dl>
@@ -78,7 +80,7 @@ const Dashboard = () => {
                     </dt>
                     <dd className="flex items-baseline">
                       <div className="text-2xl font-semibold leading-8 text-gray-900">
-                        {tourData?.getTours.length}
+                        {tourFilteredData?.getFilteredTours.totalCount}
                       </div>
                     </dd>
                   </dl>

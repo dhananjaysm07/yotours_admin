@@ -10,6 +10,7 @@ import { Country, countryData } from "../../utils/countries";
 import { useNavigate } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
 import TncComponent from "../../components/general/tnc-input-component";
+import { priorityList } from "../../utils/role";
 
 export type BestTime = {
   fromDate: string;
@@ -36,7 +37,7 @@ const CreateDestinationPage = () => {
     title: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [priority, setPriority] = useState<number | null>(null);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [bestTime, setBestTime] = useState<BestTime>({
     fromDate: "",
@@ -97,6 +98,7 @@ const CreateDestinationPage = () => {
             fromOccasion: fromOccasion,
             toOccasion: toOccasion,
             introduction: introduction,
+            priority: priority || 1,
           },
         },
       });
@@ -320,6 +322,29 @@ const CreateDestinationPage = () => {
             {tagsError && (
               <p className="text-xs italic text-red-500">{tagsError.message}</p>
             )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="priorityID"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Priority
+            </label>
+            <select
+              id="prorityID"
+              value={priority || ""}
+              onChange={(e) => setPriority(Number(e.target.value))}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              // disabled={tagsLoading}
+            >
+              <option value="">Select a priority (optional)</option>
+              {Object.values(priorityList) // This will filter out inactive tags
+                .map((el, index) => (
+                  <option key={index} value={Object.keys(priorityList)[index]}>
+                    {el}
+                  </option>
+                ))}
+            </select>
           </div>
           <div className="mb-4">
             <label

@@ -107,3 +107,146 @@ export const useDataStore = create<DataStore>((set) => ({
     set({ selectedAttraction: attraction }),
   setSelectedThing: (thing) => set({ selectedThing: thing }),
 }));
+
+interface PaginationStoreInterface<T> {
+  totalPage: number; ///Total page from the frontend perspective
+  currentPage: number;
+  totalPageLoaded: number; ////Total page from the backend perspective
+  totalResult: number;
+  dataPerPage: number;
+  loadCount: number; ////Total number of tours to load per api fetch
+  dataList: T[];
+  // setTours: (tours: Tour[]) => void;
+  setPaginationData: (
+    totalPage: number,
+    currentPage: number,
+    totalPageLoaded: number,
+    totalResult: number,
+    dataList: T[]
+  ) => void;
+  setCurrentPage: (currentPage: number) => void;
+  setNewData: (newData: T[], totalPageLoaded: number) => void;
+}
+
+export const useDestinationPaginationStore = create<
+  PaginationStoreInterface<Destination>
+>((set) => ({
+  totalPage: 0, ///Total page from the frontend perspective
+  currentPage: 0,
+  totalPageLoaded: 0, ////Total page from the backend perspective
+  totalResult: 0,
+  dataPerPage: 12,
+  loadCount: 12 * 3, ////Total number of tours to load per api fetch
+  dataList: [],
+  setPaginationData: (
+    totalPage,
+    currentPage,
+    totalPageLoaded,
+    totalResult,
+    dataList
+  ) =>
+    set((state) => {
+      return {
+        ...state,
+        totalPage,
+        currentPage,
+        totalPageLoaded,
+        totalResult,
+        dataList,
+      };
+    }),
+  setCurrentPage: (currentPage) =>
+    set((state) => {
+      return { ...state, currentPage };
+    }),
+  setNewData: (newData, totalPageLoaded) =>
+    set((state) => {
+      return {
+        ...state,
+        totalPageLoaded,
+        dataList: [...state.dataList, ...newData],
+      };
+    }),
+}));
+
+export const useTourPaginationStore = create<PaginationStoreInterface<Tour>>(
+  (set) => ({
+    totalPage: 0, ///Total page from the frontend perspective
+    currentPage: 0,
+    totalPageLoaded: 0, ////Total page from the backend perspective
+    totalResult: 0,
+    dataPerPage: 12,
+    loadCount: 12 * 3, ////Total number of tours to load per api fetch
+    dataList: [],
+    setPaginationData: (
+      totalPage,
+      currentPage,
+      totalPageLoaded,
+      totalResult,
+      dataList
+    ) =>
+      set((state) => {
+        return {
+          ...state,
+          totalPage,
+          currentPage,
+          totalPageLoaded,
+          totalResult,
+          dataList,
+        };
+      }),
+    setCurrentPage: (currentPage) =>
+      set((state) => {
+        return { ...state, currentPage };
+      }),
+    setNewData: (newData, totalPageLoaded) =>
+      set((state) => {
+        return {
+          ...state,
+          totalPageLoaded,
+          dataList: [...state.dataList, ...newData],
+        };
+      }),
+  })
+);
+
+export const useAttractionPaginationStore = create<
+  PaginationStoreInterface<Attraction>
+>((set) => ({
+  totalPage: 0, ///Total page from the frontend perspective
+  currentPage: 0,
+  totalPageLoaded: 0, ////Total page from the backend perspective
+  totalResult: 0,
+  dataPerPage: 12,
+  loadCount: 12 * 3, ////Total number of tours to load per api fetch
+  dataList: [],
+  setPaginationData: (
+    totalPage,
+    currentPage,
+    totalPageLoaded,
+    totalResult,
+    dataList
+  ) =>
+    set((state) => {
+      return {
+        ...state,
+        totalPage,
+        currentPage,
+        totalPageLoaded,
+        totalResult,
+        dataList,
+      };
+    }),
+  setCurrentPage: (currentPage) =>
+    set((state) => {
+      return { ...state, currentPage };
+    }),
+  setNewData: (newData, totalPageLoaded) =>
+    set((state) => {
+      return {
+        ...state,
+        totalPageLoaded,
+        dataList: [...state.dataList, ...newData],
+      };
+    }),
+}));

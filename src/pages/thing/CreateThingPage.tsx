@@ -52,7 +52,7 @@ const CreateThingPage = () => {
         // Write the updated list back to the cache
         cache.writeQuery({
           query: GET_THINGS_QUERY,
-          data: { getTours: newThings },
+          data: { getThings: newThings },
         });
       },
     }

@@ -52,10 +52,50 @@ export const GET_DESTINATIONS_QUERY = gql`
       fromOccasion
       toOccasion
       introduction
+      priority
     }
   }
 `;
-
+export const GET_FILTERED_DESTINATION = gql`
+  query GetFilteredDestination(
+    $page: Int!
+    $loadCount: Int!
+    $filter: TourFilterInput!
+  ) {
+    getFilteredDestination(
+      page: $page
+      loadCount: $loadCount
+      filter: $filter
+    ) {
+      destinations {
+        id
+        destinationName
+        description
+        bannerImage
+        isPopular
+        continent
+        country
+        bannerHeading
+        fromDate
+        toDate
+        fromOccasion
+        toOccasion
+        introduction
+        images {
+          id
+          imageUrl
+        }
+        tours {
+          id
+        }
+        attractions {
+          id
+        }
+      }
+      totalCount
+    }
+  }
+`;
 //TOURS
 export const GET_TOURS_QUERY = gql`
   query GetTours {
@@ -112,6 +152,41 @@ export const GET_ATTRACTIONS_QUERY = gql`
     }
   }
 `;
+export const GET_FILTERED_TOURS = gql`
+  query GetFilteredTours(
+    $page: Int!
+    $loadCount: Int!
+    $filter: TourFilterInput!
+  ) {
+    getFilteredTours(page: $page, loadCount: $loadCount, filter: $filter) {
+      tours {
+        id
+        tourTitle
+        images {
+          id
+          imageUrl
+        }
+        tourHyperlink
+        tourBokunId
+        location
+        destination {
+          id
+          destinationName
+          fromDate
+          toDate
+        }
+        price
+        currency
+        tag {
+          id
+          name
+          active
+        }
+      }
+      totalCount
+    }
+  }
+`;
 
 export const GET_ATTRACTION_QUERY = gql`
   query GetAttraction($getAttractionId: String!) {
@@ -133,6 +208,44 @@ export const GET_ATTRACTION_QUERY = gql`
         id
         name
       }
+    }
+  }
+`;
+export const GET_FILTERED_ATTRACTIONs = gql`
+  query GetFilteredAttractions(
+    $page: Int!
+    $loadCount: Int!
+    $filter: TourFilterInput!
+  ) {
+    getFilteredAttractions(
+      page: $page
+      loadCount: $loadCount
+      filter: $filter
+    ) {
+      attractions {
+        id
+        attractionTitle
+        images {
+          id
+          imageUrl
+        }
+        location
+        attractionBokunId
+        attractionHyperlink
+        destination {
+          id
+          destinationName
+          continent
+        }
+        price
+        currency
+        tag {
+          id
+          name
+          active
+        }
+      }
+      totalCount
     }
   }
 `;
@@ -163,21 +276,21 @@ export const GET_THINGS_QUERY = gql`
 //Get content Query
 export const GET_CONTENT_QUERY = gql`
   query GetContent {
-  getContent {
-    id
-    heroHeading
-    heroSubheading
-    heroImage
-    footerLinks
-    footerLogo
-    socialLinks
-    tnc
-    privacy
-    about
-    agent
-    bokunChannelId
-    leftDiscountImage
-    rightDiscountImage
+    getContent {
+      id
+      heroHeading
+      heroSubheading
+      heroImage
+      footerLinks
+      footerLogo
+      socialLinks
+      tnc
+      privacy
+      about
+      agent
+      bokunChannelId
+      leftDiscountImage
+      rightDiscountImage
+    }
   }
-}
 `;

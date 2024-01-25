@@ -26,6 +26,7 @@ export interface Destination {
   fromOccasion: string;
   toOccasion: string;
   introduction: string;
+  priority: number;
 }
 
 interface DestinationCardProps {
