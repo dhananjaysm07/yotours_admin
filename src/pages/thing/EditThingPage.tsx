@@ -145,8 +145,12 @@ const EditThingPage = () => {
   ) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) return;
+    const uniqueId = new Date().getTime() + '_' + Math.random().toString(36).slice(2, 11);
 
-    const storageRef = ref(storage, `thingImages/${file.name}`);
+    // If thingTitle is available, use it in the file name, otherwise use the unique identifier
+    const fileNamePrefix = thingTitle.trim() ? thingTitle.replace(/[^a-zA-Z0-9]/g, '_') : `thing_${uniqueId}`;
+    const fileName = `${fileNamePrefix}_${file.name}`;
+    const storageRef = ref(storage, `thingImages/${fileName}`);
     try {
       setIsUploading(true);
       await uploadBytes(storageRef, file);
@@ -320,7 +324,7 @@ const EditThingPage = () => {
               value={thingHyperlink}
               onChange={(e) => setThingHyperlink(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              required
+              
             />
           </div>
           <div className="mb-4">

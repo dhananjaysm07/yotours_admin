@@ -210,8 +210,12 @@ const EditTourPage = () => {
   ) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) return;
-
-    const storageRef = ref(storage, `bannerImages/${file.name}`);
+    
+    // If thingTitle is available, use it in the file name, otherwise use the unique identifier
+    const uniqueId = new Date().getTime() + '_' + Math.random().toString(36).slice(2, 11);
+    const fileNamePrefix = tourTitle.trim() ? tourTitle.replace(/[^a-zA-Z0-9]/g, '_') : `tour_${uniqueId}`;
+    const fileName = `${fileNamePrefix}_${file.name}`;
+    const storageRef = ref(storage, `tourImages/${fileName}`);
     try {
       setIsUploading(true);
       await uploadBytes(storageRef, file);

@@ -115,7 +115,16 @@ const CreateThingPage = () => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) return;
 
-    const storageRef = ref(storage, `thingImages/${file.name}`);
+    const uniqueId =
+      new Date().getTime() + "_" + Math.random().toString(36).slice(2, 11);
+
+    // If thingTitle is available, use it in the file name, otherwise use the unique identifier
+    const fileNamePrefix = thingTitle.trim()
+      ? thingTitle.replace(/[^a-zA-Z0-9]/g, "_")
+      : `thing_${uniqueId}`;
+    const fileName = `${fileNamePrefix}_${file.name}`;
+
+    const storageRef = ref(storage, `thingImages/${fileName}`);
     try {
       setIsUploading(true);
       await uploadBytes(storageRef, file);
