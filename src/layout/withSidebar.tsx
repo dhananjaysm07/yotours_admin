@@ -1,13 +1,13 @@
-import {  useState } from "react";
+import { useState } from "react";
 import Sidebar from "../components/common/sidebar/Sidebar";
 import Header from "../components/common/header/Header";
 import { Outlet } from "react-router";
 
 const LayoutWithSidebar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
- 
+
   return (
-    <div  className="dark:bg-boxdark-2 dark:text-bodydark">
+    <div className="dark:bg-boxdark-2 dark:text-bodydark">
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="flex h-screen overflow-hidden">
         {/* <!-- ===== Sidebar Start ===== --> */}
@@ -22,7 +22,7 @@ const LayoutWithSidebar = () => {
 
           {/* <!-- ===== Main Content Start ===== --> */}
           <main>
-            <div  className="p-4 mx-auto max-w-screen-2xl md:p-6 2xl:p-10">
+            <div className="p-4 mx-auto max-w-screen-2xl md:p-6 2xl:p-10">
               <Outlet />
             </div>
           </main>

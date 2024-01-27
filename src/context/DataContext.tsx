@@ -8,6 +8,8 @@ import {
   GET_FILTERED_DESTINATION,
   GET_FILTERED_TOURS,
   GET_THINGS_QUERY,
+  GET_DESTINATIONS_LIST_QUERY,
+  GET_TOURS_LIST_QUERY,
   // GET_TOURS_QUERY,
 } from "../graphql/query";
 import { Destination } from "../components/destination/destination-card";
@@ -16,11 +18,11 @@ import { Attraction } from "../pages/attraction/AllAttractionsPage";
 import { Thing } from "../pages/thing/AllThingsPage";
 
 interface IDataContext {
-  // destinationData: {
-  //   getDestinations: Destination[];
-  // };
-  // destinationError: any;
-  // destinationLoading: boolean;
+  destinationListData: {
+    getDestinations: Destination[];
+  };
+  destinationListError: any;
+  destinationListLoading: boolean;
   destinationFilteredData: {
     getFilteredDestination: {
       destinations: Destination[];
@@ -30,11 +32,11 @@ interface IDataContext {
   destinationFilteredError: any;
   destinationFilteredLoading: boolean;
   refetchFilteredDestination: any;
-  // tourData: {
-  //   getTours: Tour[];
-  // };
-  // tourLoading: boolean;
-  // tourError: any;
+  tourListData: {
+    getTours: Tour[];
+  };
+  tourListLoading: boolean;
+  tourListError: any;
   tourFilteredData: {
     getFilteredTours: {
       tours: Tour[];
@@ -69,16 +71,16 @@ interface Props {
 }
 
 export const DataProvider = ({ children }: Props) => {
-  // const {
-  //   loading: destinationLoading,
-  //   error: destinationError,
-  //   data: destinationData,
-  // }: QueryResult = useQuery(GET_DESTINATIONS_QUERY);
-  // const {
-  //   loading: tourLoading,
-  //   error: tourError,
-  //   data: tourData,
-  // }: QueryResult = useQuery(GET_TOURS_QUERY);
+  const {
+    loading: destinationListLoading,
+    error: destinationListError,
+    data: destinationListData,
+  }: QueryResult = useQuery(GET_DESTINATIONS_LIST_QUERY);
+  const {
+    loading: tourListLoading,
+    error: tourListError,
+    data: tourListData,
+  }: QueryResult = useQuery(GET_TOURS_LIST_QUERY);
   const {
     loading: attractionLoading,
     error: attractionError,
@@ -176,6 +178,12 @@ export const DataProvider = ({ children }: Props) => {
     attractionFilteredData,
     attractionFilteredError,
     attractionFilteredLoading,
+    tourListData,
+    tourListError,
+    tourListLoading,
+    destinationListData,
+    destinationListError,
+    destinationListLoading,
   };
 
   return (

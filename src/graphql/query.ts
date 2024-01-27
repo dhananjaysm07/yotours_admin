@@ -56,6 +56,34 @@ export const GET_DESTINATIONS_QUERY = gql`
     }
   }
 `;
+export const GET_DESTINATIONS_LIST_QUERY = gql`
+  query GetDestinations {
+    getDestinations {
+      id
+      destinationName
+      description
+      country
+      continent
+      isPopular
+      bannerImage
+      bannerHeading
+      images {
+        id
+        imageUrl
+      }
+      tag {
+        id
+        name
+      }
+      fromDate
+      toDate
+      fromOccasion
+      toOccasion
+      introduction
+      priority
+    }
+  }
+`;
 export const GET_FILTERED_DESTINATION = gql`
   query GetFilteredDestination(
     $page: Int!
@@ -124,7 +152,32 @@ export const GET_TOURS_QUERY = gql`
   }
 `;
 //
-
+export const GET_TOURS_LIST_QUERY = gql`
+  query GetTours {
+    getTours {
+      id
+      tourTitle
+      tourHyperlink
+      images {
+        id
+        imageUrl
+      }
+      location
+      destination {
+        id
+        destinationName
+      }
+      price
+      currency
+      tourBokunId
+      tag {
+        id
+        name
+      }
+      active
+    }
+  }
+`;
 // Attractions
 
 export const GET_ATTRACTIONS_QUERY = gql`
@@ -152,6 +205,7 @@ export const GET_ATTRACTIONS_QUERY = gql`
     }
   }
 `;
+
 export const GET_FILTERED_TOURS = gql`
   query GetFilteredTours(
     $page: Int!
