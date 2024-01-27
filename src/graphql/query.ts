@@ -119,6 +119,7 @@ export const GET_FILTERED_DESTINATION = gql`
         attractions {
           id
         }
+        priority
       }
       totalCount
     }
