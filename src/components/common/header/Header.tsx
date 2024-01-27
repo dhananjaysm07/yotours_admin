@@ -85,7 +85,7 @@ const Header = (props: {
       default:
         setSuggestionList([]);
     }
-  }, [filter]);
+  }, [filter, attractionData, destinationListData, thingData, tourListData]);
   const handleDocumentClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
 
