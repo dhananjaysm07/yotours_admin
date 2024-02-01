@@ -119,9 +119,69 @@ export const GET_FILTERED_DESTINATION = gql`
         attractions {
           id
         }
+
         priority
       }
       totalCount
+    }
+  }
+`;
+
+export const GET_SINGLE_DESTINATION = gql`
+  query GetDestination($getDestinationId: String!) {
+    getDestination(id: $getDestinationId) {
+      id
+      destinationName
+      continent
+      country
+      bannerImage
+      bannerHeading
+      description
+      isPopular
+      fromDate
+      toDate
+      fromOccasion
+      toOccasion
+      images {
+        id
+        imageUrl
+      }
+      priority
+      tag {
+        id
+        name
+        active
+      }
+      tours {
+        id
+        tourTitle
+        location
+        active
+        images {
+          id
+          imageUrl
+        }
+      }
+      attractions {
+        id
+        attractionTitle
+        location
+        images {
+          id
+          imageUrl
+        }
+        active
+      }
+      introduction
+      things {
+        id
+        thingTitle
+        images {
+          id
+          imageUrl
+        }
+        active
+      }
     }
   }
 `;
@@ -237,8 +297,39 @@ export const GET_FILTERED_TOURS = gql`
           name
           active
         }
+        active
       }
       totalCount
+    }
+  }
+`;
+
+export const GET_SINGLE_TOUR = gql`
+  query FindOne($findOneId: String!) {
+    findOne(id: $findOneId) {
+      id
+      tourTitle
+      price
+      currency
+      location
+      tourHyperlink
+      tourBokunId
+      active
+      images {
+        id
+        imageUrl
+      }
+      tag {
+        id
+        name
+        active
+      }
+      destination {
+        id
+        destinationName
+        fromDate
+        toDate
+      }
     }
   }
 `;
@@ -262,6 +353,35 @@ export const GET_ATTRACTION_QUERY = gql`
       tag {
         id
         name
+      }
+    }
+  }
+`;
+export const GET_SINGLE_ATTRACTION = gql`
+  query GetAttraction($getAttractionId: String!) {
+    getAttraction(id: $getAttractionId) {
+      id
+      attractionTitle
+      price
+      currency
+      location
+      attractionBokunId
+      attractionHyperlink
+      active
+      images {
+        id
+        imageUrl
+      }
+      tag {
+        id
+        name
+        active
+      }
+      destination {
+        id
+        destinationName
+        fromDate
+        toDate
       }
     }
   }
@@ -299,6 +419,38 @@ export const GET_FILTERED_ATTRACTIONs = gql`
           name
           active
         }
+        active
+      }
+      totalCount
+    }
+  }
+`;
+
+export const GET_FILTERED_THINGS = gql`
+  query GetFilteredThings(
+    $page: Int!
+    $loadCount: Int!
+    $filter: TourFilterInput!
+  ) {
+    getFilteredThings(page: $page, loadCount: $loadCount, filter: $filter) {
+      things {
+        id
+        thingTitle
+        thingDescription
+        thingHyperlink
+        destination {
+          id
+          destinationName
+        }
+        images {
+          id
+          imageUrl
+        }
+        tag {
+          id
+          name
+        }
+        active
       }
       totalCount
     }
@@ -328,6 +480,33 @@ export const GET_THINGS_QUERY = gql`
   }
 `;
 
+export const GET_SINGLE_THING = gql`
+  query GetThing($getThingId: String!) {
+    getThing(id: $getThingId) {
+      id
+      thingTitle
+      thingDescription
+      thingHyperlink
+      images {
+        id
+        imageUrl
+      }
+      tag {
+        id
+        name
+        active
+      }
+      destination {
+        id
+        destinationName
+        fromDate
+        toDate
+      }
+      active
+    }
+  }
+`;
+
 //Get content Query
 export const GET_CONTENT_QUERY = gql`
   query GetContent {
@@ -346,6 +525,16 @@ export const GET_CONTENT_QUERY = gql`
       bokunChannelId
       leftDiscountImage
       rightDiscountImage
+    }
+  }
+`;
+
+export const GET_COUNTRIES_CONTINENTS_QUERY = gql`
+  query GetCountriesAndContinents {
+    getCountriesAndContinents {
+      country
+      continent
+      destinationCount
     }
   }
 `;

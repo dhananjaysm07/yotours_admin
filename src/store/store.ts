@@ -66,6 +66,7 @@ export const useDataStore = create<DataStore>((set) => ({
     toDate: "",
     toOccasion: "",
     introduction: "",
+    priority: 0,
   },
   selectedAttraction: {
     id: "",
@@ -146,25 +147,36 @@ export const useDestinationPaginationStore = create<
     dataList
   ) =>
     set((state) => {
+      const arr = new Array(totalResult).fill(undefined);
+      for (let i = 0; i < dataList.length; i++) {
+        arr[i] = dataList[i];
+      }
       return {
         ...state,
         totalPage,
         currentPage,
         totalPageLoaded,
         totalResult,
-        dataList,
+        dataList: arr,
       };
     }),
   setCurrentPage: (currentPage) =>
     set((state) => {
       return { ...state, currentPage };
     }),
-  setNewData: (newData, totalPageLoaded) =>
+  setNewData: (newData, pageLoaded) =>
     set((state) => {
+      const dataArr = state.dataList;
+      const initialpos = (pageLoaded - 1) * state.loadCount;
+      let j = 0;
+      for (let i = initialpos; i < newData.length + initialpos; i++) {
+        dataArr[i] = newData[j];
+        j++;
+      }
       return {
         ...state,
-        totalPageLoaded,
-        dataList: [...state.dataList, ...newData],
+        totalPageLoaded: pageLoaded,
+        dataList: dataArr,
       };
     }),
 }));
@@ -186,25 +198,36 @@ export const useTourPaginationStore = create<PaginationStoreInterface<Tour>>(
       dataList
     ) =>
       set((state) => {
+        const arr = new Array(totalResult).fill(undefined);
+        for (let i = 0; i < dataList.length; i++) {
+          arr[i] = dataList[i];
+        }
         return {
           ...state,
           totalPage,
           currentPage,
           totalPageLoaded,
           totalResult,
-          dataList,
+          dataList: arr,
         };
       }),
     setCurrentPage: (currentPage) =>
       set((state) => {
         return { ...state, currentPage };
       }),
-    setNewData: (newData, totalPageLoaded) =>
+    setNewData: (newData, pageLoaded) =>
       set((state) => {
+        const dataArr = state.dataList;
+        const initialpos = (pageLoaded - 1) * state.loadCount;
+        let j = 0;
+        for (let i = initialpos; i < newData.length + initialpos; i++) {
+          dataArr[i] = newData[j];
+          j++;
+        }
         return {
           ...state,
-          totalPageLoaded,
-          dataList: [...state.dataList, ...newData],
+          totalPageLoaded: pageLoaded,
+          dataList: dataArr,
         };
       }),
   })
@@ -250,3 +273,44 @@ export const useAttractionPaginationStore = create<
       };
     }),
 }));
+
+export const useThingPaginationStore = create<PaginationStoreInterface<Thing>>(
+  (set) => ({
+    totalPage: 0, ///Total page from the frontend perspective
+    currentPage: 0,
+    totalPageLoaded: 0, ////Total page from the backend perspective
+    totalResult: 0,
+    dataPerPage: 12,
+    loadCount: 12 * 3, ////Total number of tours to load per api fetch
+    dataList: [],
+    setPaginationData: (
+      totalPage,
+      currentPage,
+      totalPageLoaded,
+      totalResult,
+      dataList
+    ) =>
+      set((state) => {
+        return {
+          ...state,
+          totalPage,
+          currentPage,
+          totalPageLoaded,
+          totalResult,
+          dataList,
+        };
+      }),
+    setCurrentPage: (currentPage) =>
+      set((state) => {
+        return { ...state, currentPage };
+      }),
+    setNewData: (newData, totalPageLoaded) =>
+      set((state) => {
+        return {
+          ...state,
+          totalPageLoaded,
+          dataList: [...state.dataList, ...newData],
+        };
+      }),
+  })
+);

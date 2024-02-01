@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { QueryResult, useMutation, useQuery } from "@apollo/client";
 import {
   UPDATE_THING_MUTATION,
   DELETE_THING_MUTATION,
+  ACTIVATE_THING_MUTATION,
 } from "../../graphql/mutations";
 import {
   GET_DESTINATIONS_QUERY,
+  GET_SINGLE_THING,
   GET_TAGS_QUERY,
   GET_THINGS_QUERY,
 } from "../../graphql/query";
@@ -15,7 +17,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../../utils/firebase";
 import { Thing } from "./AllThingsPage";
 import { useDataStore } from "../../store/store";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
 
 type GetThingsQueryResponse = {
@@ -23,7 +25,17 @@ type GetThingsQueryResponse = {
 };
 
 const EditThingPage = () => {
-  const { selectedThing } = useDataStore();
+  // const { selectedThing } = useDataStore();
+  const { selectedThing, setSelectedThing } = useDataStore();
+  const { thingId } = useParams();
+  const {
+    data: thingData,
+    loading: thingLoading,
+    error: thingError,
+  }: QueryResult = useQuery(GET_SINGLE_THING, {
+    variables: { getThingId: thingId },
+  });
+
   const [thingTitle, setThingTitle] = useState(selectedThing?.thingTitle || "");
   const [thingDescription, setThingDescription] = useState(
     selectedThing?.thingDescription || ""
@@ -41,17 +53,24 @@ const EditThingPage = () => {
 
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(!selectedThing.id);
+  const [isActive, setIsActive] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // If selectedTour changes and has an id, we're no longer loading
-    if (selectedThing.id) {
+  React.useEffect(() => {
+    if (thingData) {
+      setSelectedThing(thingData?.getThing);
       setIsLoading(false);
+      setThingImage(thingData?.getThing?.images?.[0]?.imageUrl || "");
+      setTagId(thingData?.getThing?.tag?.id || "");
+      setDestinationId(thingData?.getThing?.destination?.id || "");
+      setThingHyperlink(thingData?.getThing?.images?.[0]?.imageUrl || "");
+      setThingDescription(thingData?.getThing?.thingDescription || "");
+      setThingTitle(thingData?.getThing?.thingTitle || "");
+      setIsActive(thingData?.getThing?.active || false);
     }
-  }, [selectedThing]);
+  }, [thingData]);
 
   const [updateThing, { data, loading, error }] = useMutation(
     UPDATE_THING_MUTATION,
@@ -145,10 +164,13 @@ const EditThingPage = () => {
   ) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) return;
-    const uniqueId = new Date().getTime() + '_' + Math.random().toString(36).slice(2, 11);
+    const uniqueId =
+      new Date().getTime() + "_" + Math.random().toString(36).slice(2, 11);
 
     // If thingTitle is available, use it in the file name, otherwise use the unique identifier
-    const fileNamePrefix = thingTitle.trim() ? thingTitle.replace(/[^a-zA-Z0-9]/g, '_') : `thing_${uniqueId}`;
+    const fileNamePrefix = thingTitle.trim()
+      ? thingTitle.replace(/[^a-zA-Z0-9]/g, "_")
+      : `thing_${uniqueId}`;
     const fileName = `${fileNamePrefix}_${file.name}`;
     const storageRef = ref(storage, `thingImages/${fileName}`);
     try {
@@ -187,6 +209,31 @@ const EditThingPage = () => {
     ],
   });
 
+  const [activateThing] = useMutation(ACTIVATE_THING_MUTATION, {
+    update(cache, { data: { activateThing } }) {
+      // Retrieve the current tour list from the cache
+      const existingTours = cache.readQuery<GetThingsQueryResponse>({
+        query: GET_THINGS_QUERY,
+      });
+
+      if (existingTours) {
+        // Filter out the deleted tour from the list
+        const updatedThings = existingTours.getThings.filter(
+          (tour) => tour.id !== activateThing.id
+        );
+
+        // Write the updated list back to the cache
+        cache.writeQuery({
+          query: GET_THINGS_QUERY,
+          data: { getThings: updatedThings },
+        });
+      }
+    },
+    refetchQueries: [
+      GET_THINGS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
+    ],
+  });
+
   const handleDeleteThing = async () => {
     // console.log("ffunction called");
     try {
@@ -206,6 +253,32 @@ const EditThingPage = () => {
       alert("Something went wrong");
     }
   };
+  const handleActivateThing = async () => {
+    // console.log("ffunction called");
+    try {
+      // Call the deleteTour mutation
+      const res = await activateThing({
+        variables: {
+          activateThingId: selectedThing.id,
+        },
+      });
+      console.log("respone", res);
+      if (res?.data?.activateThing?.id) {
+        navigate("../../allthings");
+      } else {
+        alert("Something went wrong");
+      }
+    } catch (error) {
+      alert("Something went wrong");
+    }
+  };
+  if (thingLoading) {
+    return <div>Loading...</div>; // Put your loading spinner or message here
+  }
+
+  if (thingError) {
+    return <div>Error Loading</div>; // Put your loading spinner or message here
+  }
 
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -216,9 +289,15 @@ const EditThingPage = () => {
         <button
           type="submit"
           className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
-          onClick={handleDeleteThing}
+          onClick={() => {
+            if (isActive) {
+              handleDeleteThing();
+            } else {
+              handleActivateThing();
+            }
+          }}
         >
-          Delete
+          {isActive ? "Delete" : "Activate"}
         </button>
       </div>
       <div className="p-6.5">
@@ -324,7 +403,6 @@ const EditThingPage = () => {
               value={thingHyperlink}
               onChange={(e) => setThingHyperlink(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              
             />
           </div>
           <div className="mb-4">

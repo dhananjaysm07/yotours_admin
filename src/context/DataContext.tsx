@@ -10,6 +10,8 @@ import {
   GET_THINGS_QUERY,
   GET_DESTINATIONS_LIST_QUERY,
   GET_TOURS_LIST_QUERY,
+  GET_FILTERED_THINGS,
+  GET_COUNTRIES_CONTINENTS_QUERY,
   // GET_TOURS_QUERY,
 } from "../graphql/query";
 import { Destination } from "../components/destination/destination-card";
@@ -62,6 +64,24 @@ interface IDataContext {
   };
   thingLoading: boolean;
   thingError: any;
+  refetchThing: any;
+  thingFilteredData: {
+    GetFilteredThings: {
+      things: Thing[];
+      totalCount: number;
+    };
+  };
+  thingFilteredError: any;
+  thingFilteredLoading: boolean;
+  destCCLoading: boolean;
+  destCCError: any;
+  destCCData: {
+    getCountriesAndContinents: Array<{
+      country: string;
+      destinationCount: number;
+      continent: string;
+    }>;
+  };
 }
 
 const DataContext = createContext<IDataContext | null>(null);
@@ -71,6 +91,11 @@ interface Props {
 }
 
 export const DataProvider = ({ children }: Props) => {
+  const {
+    loading: destCCLoading,
+    error: destCCError,
+    data: destCCData,
+  } = useQuery(GET_COUNTRIES_CONTINENTS_QUERY);
   const {
     loading: destinationListLoading,
     error: destinationListError,
@@ -130,6 +155,29 @@ export const DataProvider = ({ children }: Props) => {
         endDate: null,
         tagName: [],
         continent: [],
+        activeValues: [true, false],
+      },
+    },
+  });
+
+  const {
+    loading: thingFilteredLoading,
+    error: thingFilteredError,
+    data: thingFilteredData,
+    refetch: refetchThing,
+  } = useQuery(GET_FILTERED_THINGS, {
+    variables: {
+      page: 0,
+      loadCount: 0,
+      filter: {
+        priceMin: null,
+        startDate: null,
+        priceMax: null,
+        location: null,
+        endDate: null,
+        tagName: [],
+        continent: [],
+        activeValues: [true, false],
       },
     },
   });
@@ -150,6 +198,7 @@ export const DataProvider = ({ children }: Props) => {
         endDate: null,
         tagName: [],
         continent: [],
+        activeValues: [true, false],
       },
     },
   });
@@ -184,6 +233,13 @@ export const DataProvider = ({ children }: Props) => {
     destinationListData,
     destinationListError,
     destinationListLoading,
+    refetchThing,
+    thingFilteredData,
+    thingFilteredError,
+    thingFilteredLoading,
+    destCCLoading,
+    destCCError,
+    destCCData,
   };
 
   return (

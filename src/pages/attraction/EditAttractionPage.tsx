@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { QueryResult, useMutation, useQuery } from "@apollo/client";
 import {
   UPDATE_ATTRACTION_MUTATION,
   DELETE_ATTRACTION_MUTATION,
+  ACTIVATE_ATTRACTION_MUTATION,
 } from "../../graphql/mutations";
 import {
   GET_ATTRACTIONS_QUERY,
   GET_DESTINATIONS_QUERY,
+  GET_SINGLE_ATTRACTION,
   GET_TAGS_QUERY,
 } from "../../graphql/query";
 import { Tag } from "../../components/settings/create-tag";
@@ -15,7 +17,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../../utils/firebase";
 import { Attraction } from "./AllAttractionsPage";
 import { useDataStore } from "../../store/store";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
 
 type GetAttractionsQueryResponse = {
@@ -23,10 +25,20 @@ type GetAttractionsQueryResponse = {
 };
 
 const EditAttractionPage = () => {
+  const { selectedAttraction, setSelectedAttraction } = useDataStore();
+  const { attractionId } = useParams();
+  const {
+    data: attractionData,
+    loading: attractionLoading,
+    error: attractionError,
+  }: QueryResult = useQuery(GET_SINGLE_ATTRACTION, {
+    variables: { getAttractionId: attractionId },
+  });
+
   const defaultImg =
     "https://firebasestorage.googleapis.com/v0/b/marketingform-d32c3.appspot.com/o/bannerImages%2Fbackground.png?alt=media&token=4c357a20-703d-41df-a5e0-b1f1a585a4a1";
 
-  const { selectedAttraction } = useDataStore();
+  // const { selectedAttraction } = useDataStore();
   const [attractionTitle, setAttractionTitle] = useState(
     selectedAttraction?.attractionTitle || ""
   );
@@ -52,11 +64,33 @@ const EditAttractionPage = () => {
 
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(!selectedAttraction.id);
+  const [isActive, setIsActive] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const navigate = useNavigate();
-
+  React.useEffect(() => {
+    if (attractionData) {
+      setSelectedAttraction(attractionData?.getAttraction);
+      setIsLoading(false);
+      setAttractionImage(
+        attractionData?.getAttraction?.images?.[0]?.imageUrl || defaultImg
+      );
+      setTagId(attractionData?.getAttraction?.tag?.id || "");
+      setAttractionBokunId(
+        attractionData?.getAttraction?.attractionBokunId || ""
+      );
+      setDestinationId(attractionData?.getAttraction?.destination?.id || "");
+      setAttractionHyperlink(
+        attractionData?.getAttraction?.attractionHyperlink || ""
+      );
+      setAttractionLocation(attractionData?.getAttraction?.location || "");
+      setCurrency(attractionData?.getAttraction?.currency || "");
+      setPrice(attractionData?.getAttraction?.price || "");
+      setAttractionTitle(attractionData?.getAttraction?.attractionTitle || "");
+      setIsActive(attractionData?.getAttraction?.active || false);
+    }
+  }, [attractionData]);
   useEffect(() => {
     // If selectedTour changes and has an id, we're no longer loading
     if (selectedAttraction.id) {
@@ -168,8 +202,11 @@ const EditAttractionPage = () => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) return;
 
-    const uniqueId = new Date().getTime() + '_' + Math.random().toString(36).slice(2, 11);
-    const fileNamePrefix = attractionTitle.trim() ? attractionTitle.replace(/[^a-zA-Z0-9]/g, '_') : `attraction_${uniqueId}`;
+    const uniqueId =
+      new Date().getTime() + "_" + Math.random().toString(36).slice(2, 11);
+    const fileNamePrefix = attractionTitle.trim()
+      ? attractionTitle.replace(/[^a-zA-Z0-9]/g, "_")
+      : `attraction_${uniqueId}`;
     const fileName = `${fileNamePrefix}_${file.name}`;
     const storageRef = ref(storage, `attractionImages/${fileName}`);
     try {
@@ -209,6 +246,31 @@ const EditAttractionPage = () => {
     ],
   });
 
+  const [activateAttraction] = useMutation(ACTIVATE_ATTRACTION_MUTATION, {
+    update(cache, { data: { activateAttraction } }) {
+      // Retrieve the current tour list from the cache
+      const existingTours = cache.readQuery<GetAttractionsQueryResponse>({
+        query: GET_ATTRACTIONS_QUERY,
+      });
+
+      if (existingTours) {
+        // Filter out the deleted tour from the list
+        const updateAttractions = existingTours.getAttractions.filter(
+          (tour) => tour.id !== activateAttraction.id
+        );
+
+        // Write the updated list back to the cache
+        cache.writeQuery({
+          query: GET_ATTRACTIONS_QUERY,
+          data: { getAttractions: updateAttractions },
+        });
+      }
+    },
+    refetchQueries: [
+      GET_ATTRACTIONS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
+    ],
+  });
+
   const handleDeleteTour = async () => {
     // console.log("ffunction called");
     try {
@@ -230,6 +292,34 @@ const EditAttractionPage = () => {
     }
   };
 
+  const handleActivateTour = async () => {
+    // console.log("ffunction called");
+    try {
+      // Call the deleteTour mutation
+      const res = await activateAttraction({
+        variables: {
+          activateAttractionId: selectedAttraction.id,
+        },
+      });
+      console.log("respone", res);
+      if (res?.data?.activateAttraction?.id) {
+        navigate("../../allattractions");
+      } else {
+        alert("Something went wrong");
+      }
+    } catch (error) {
+      console.log("error", error);
+      alert("Something went wrong");
+    }
+  };
+  if (attractionLoading) {
+    return <div>Loading...</div>; // Put your loading spinner or message here
+  }
+
+  if (attractionError) {
+    return <div>Error Loading </div>; // Put your loading spinner or message here
+  }
+
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark flex justify-between items-center">
@@ -239,9 +329,15 @@ const EditAttractionPage = () => {
         <button
           type="submit"
           className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
-          onClick={handleDeleteTour}
+          onClick={() => {
+            if (isActive) {
+              handleDeleteTour();
+            } else {
+              handleActivateTour();
+            }
+          }}
         >
-          Delete
+          {isActive ? "Delete" : "Activate"}
         </button>
       </div>
       <div className="p-6.5">

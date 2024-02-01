@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { QueryResult, useMutation, useQuery } from "@apollo/client";
 import {
   UPDATE_TOUR_MUTATION,
   DELETE_TOUR_MUTATION,
+  ACTIVATE_TOUR_MUTATION,
 } from "../../graphql/mutations";
 import {
   GET_DESTINATIONS_QUERY,
+  GET_SINGLE_TOUR,
   GET_TAGS_QUERY,
   GET_TOURS_QUERY,
 } from "../../graphql/query";
@@ -15,7 +17,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../../utils/firebase";
 import { Tour } from "./AllToursPage";
 import { useDataStore } from "../../store/store";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
 
 type GetToursQueryResponse = {
@@ -23,7 +25,17 @@ type GetToursQueryResponse = {
 };
 
 const EditTourPage = () => {
-  const { selectedTour } = useDataStore();
+  const { selectedTour, setSelectedTour } = useDataStore();
+  const { tourId } = useParams();
+  const {
+    data: tourData,
+    loading: tourLoading,
+    error: tourError,
+  }: QueryResult = useQuery(GET_SINGLE_TOUR, {
+    variables: { findOneId: tourId },
+  });
+
+  // console.log("Selected tour", selectedTour);
   const defaultImg =
     "https://firebasestorage.googleapis.com/v0/b/marketingform-d32c3.appspot.com/o/bannerImages%2Fbackground.png?alt=media&token=4c357a20-703d-41df-a5e0-b1f1a585a4a1";
   const navigate = useNavigate();
@@ -52,20 +64,31 @@ const EditTourPage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-
+  const [isActive, setIsActive] = useState(false);
   // const navigate = useNavigate();
+  React.useEffect(() => {
+    if (tourData) {
+      setSelectedTour(tourData?.findOne);
+      setTourBokunId(tourData?.findOne?.tourBokunId);
+      setTourHyperlink(tourData?.findOne?.tourHyperlink);
+      setTagId(tourData?.findOne?.tag?.id || "");
+      setTourImage(tourData?.findOne?.images?.[0]?.imageUrl || defaultImg);
+      setDestinationId(tourData?.findOne?.destination?.id || "");
+      setTourLocation(tourData?.findOne?.location || "");
+      setCurrency(tourData?.findOne?.currency || "");
+      setTourPrice(tourData?.findOne?.price || "");
+      setTourTitle(tourData?.findOne?.tourTitle || "");
+      setIsActive(tourData?.findOne?.active || false);
+    }
+  }, [tourData]);
 
   useEffect(() => {
     // If selectedTour changes and has an id, we're no longer loading
-    if (selectedTour.id) {
+    if (tourData) {
       setIsLoading(false);
     }
-  }, [selectedTour]);
+  }, [tourData]);
   // Initialize destinationId when destinationsData is loaded or when the selected tour changes
-
-  if (isLoading) {
-    return <div>Loading...</div>; // Put your loading spinner or message here
-  }
 
   const [updateTour, { data, loading, error }] = useMutation(
     UPDATE_TOUR_MUTATION,
@@ -128,6 +151,31 @@ const EditTourPage = () => {
     ],
   });
 
+  const [activateTour] = useMutation(ACTIVATE_TOUR_MUTATION, {
+    update(cache, { data: { activateTour } }) {
+      // Retrieve the current tour list from the cache
+      const existingTours = cache.readQuery<GetToursQueryResponse>({
+        query: GET_TOURS_QUERY,
+      });
+
+      if (existingTours) {
+        // Filter out the deleted tour from the list
+        const updatedTours = existingTours.getTours.filter(
+          (tour) => tour.id !== activateTour.id
+        );
+
+        // Write the updated list back to the cache
+        cache.writeQuery({
+          query: GET_TOURS_QUERY,
+          data: { getTours: updatedTours },
+        });
+      }
+    },
+    refetchQueries: [
+      GET_TOURS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
+    ],
+  });
+
   const handleDeleteTour = async () => {
     console.log("ffunction called");
     try {
@@ -144,6 +192,27 @@ const EditTourPage = () => {
         alert("Something went wrong");
       }
     } catch (error) {
+      alert("Something went wrong");
+    }
+  };
+
+  const handleActivateTour = async () => {
+    // console.log("ffunction called");
+    try {
+      // Call the deleteTour mutation
+      const res = await activateTour({
+        variables: {
+          activateTourId: selectedTour.id,
+        },
+      });
+      // console.log("respone", res);
+      if (res?.data?.activateTour?.id) {
+        navigate("../");
+      } else {
+        alert("Something went wrong");
+      }
+    } catch (error) {
+      console.log("error", error);
       alert("Something went wrong");
     }
   };
@@ -196,11 +265,11 @@ const EditTourPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (tagsData) {
-      // Handle fetched tags, perhaps format them if needed, or set them directly in state
-    }
-  }, [tagsData]);
+  // useEffect(() => {
+  //   if (tagsData) {
+  //     // Handle fetched tags, perhaps format them if needed, or set them directly in state
+  //   }
+  // }, [tagsData]);
 
   // Firebase storage logic
   const storage = getStorage(app);
@@ -210,10 +279,13 @@ const EditTourPage = () => {
   ) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) return;
-    
+
     // If thingTitle is available, use it in the file name, otherwise use the unique identifier
-    const uniqueId = new Date().getTime() + '_' + Math.random().toString(36).slice(2, 11);
-    const fileNamePrefix = tourTitle.trim() ? tourTitle.replace(/[^a-zA-Z0-9]/g, '_') : `tour_${uniqueId}`;
+    const uniqueId =
+      new Date().getTime() + "_" + Math.random().toString(36).slice(2, 11);
+    const fileNamePrefix = tourTitle.trim()
+      ? tourTitle.replace(/[^a-zA-Z0-9]/g, "_")
+      : `tour_${uniqueId}`;
     const fileName = `${fileNamePrefix}_${file.name}`;
     const storageRef = ref(storage, `tourImages/${fileName}`);
     try {
@@ -227,6 +299,13 @@ const EditTourPage = () => {
       setIsUploading(false);
     }
   };
+  if (tourLoading) {
+    return <div>Loading...</div>; // Put your loading spinner or message here
+  }
+
+  if (tourError) {
+    return <div>Error Loading</div>; // Put your loading spinner or message here
+  }
 
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -237,9 +316,15 @@ const EditTourPage = () => {
         <button
           type="submit"
           className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
-          onClick={handleDeleteTour}
+          onClick={() => {
+            if (isActive) {
+              handleDeleteTour();
+            } else {
+              handleActivateTour();
+            }
+          }}
         >
-          Delete
+          {isActive ? "Delete" : "Activate"}
         </button>
       </div>
       <div className="p-6.5">

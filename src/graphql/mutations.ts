@@ -148,6 +148,14 @@ export const DELETE_TOUR_MUTATION = gql`
   }
 `;
 
+export const ACTIVATE_TOUR_MUTATION = gql`
+  mutation ActivateTour($activateTourId: String!) {
+    activateTour(id: $activateTourId) {
+      id
+    }
+  }
+`;
+
 // /ATT
 
 export const CREATE_ATTRACTION_MUTATION = gql`
@@ -191,6 +199,14 @@ export const DELETE_ATTRACTION_MUTATION = gql`
   }
 `;
 
+export const ACTIVATE_ATTRACTION_MUTATION = gql`
+  mutation ActivateAttraction($activateAttractionId: String!) {
+    activateAttraction(id: $activateAttractionId) {
+      id
+    }
+  }
+`;
+
 export const CREATE_THING_MUTATION = gql`
   mutation CreateThing($createThingInput: CreateThingInput!) {
     createThing(createThingInput: $createThingInput) {
@@ -223,6 +239,14 @@ export const UPDATE_THING_MUTATION = gql`
 export const DELETE_THING_MUTATION = gql`
   mutation DeleteThing($deleteThingId: String!) {
     deleteThing(id: $deleteThingId) {
+      id
+    }
+  }
+`;
+
+export const ACTIVATE_THING_MUTATION = gql`
+  mutation ActivateThing($activateThingId: String!) {
+    activateThing(id: $activateThingId) {
       id
     }
   }

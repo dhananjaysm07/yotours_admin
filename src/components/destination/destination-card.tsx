@@ -27,6 +27,35 @@ export interface Destination {
   toOccasion: string;
   introduction: string;
   priority: number;
+  tours: Array<{
+    id: string;
+    tourTitle: string;
+    location: string;
+    active: boolean;
+    images: {
+      id: string;
+      imageUrl: string;
+    };
+  }>;
+  attractions: Array<{
+    id: string;
+    attractionTitle: string;
+    location: string;
+    images: {
+      id: string;
+      imageUrl: string;
+    };
+    active: boolean;
+  }>;
+  things: Array<{
+    id: string;
+    thingTitle: string;
+    images: {
+      id: string;
+      imageUrl: string;
+    };
+    active: boolean;
+  }>;
 }
 
 interface DestinationCardProps {

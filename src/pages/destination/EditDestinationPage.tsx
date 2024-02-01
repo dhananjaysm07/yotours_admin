@@ -1,12 +1,16 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { QueryResult, useMutation, useQuery } from "@apollo/client";
 import {
   CREATE_DESTINATION_MUTATION,
   UPDATE_DESTINATION_MUTATION,
 } from "../../graphql/mutations";
 import DestinationPhotos from "../../components/settings/destination-photos";
 import DestinationBanner from "../../components/settings/destination-banner";
-import { GET_DESTINATIONS_QUERY, GET_TAGS_QUERY } from "../../graphql/query";
+import {
+  GET_DESTINATIONS_QUERY,
+  GET_SINGLE_DESTINATION,
+  GET_TAGS_QUERY,
+} from "../../graphql/query";
 import { Tag } from "../../components/settings/create-tag";
 import { Destination } from "../../components/destination/destination-card";
 import { Country, countryData } from "../../utils/countries";
@@ -14,19 +18,29 @@ import { useDataStore } from "../../store/store";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import app from "../../utils/firebase";
 import { ErrorModal } from "../../components/common/ErrorModal";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { BestTime, DateInput } from "./CreateDestinationPage";
 import TncComponent from "../../components/general/tnc-input-component";
 import { priorityList } from "../../utils/role";
+import { Thing } from "../thing/AllThingsPage";
 
 type GetDestinationsQueryResponse = {
   getDestinations: Destination[]; // Assuming `Tag` is the type of your tags
 };
 
 const EditDestinationPage = () => {
+  const { selectedDestination, setSelectedDestination } = useDataStore();
+  const { destinationId } = useParams();
+  const {
+    data: destinationData,
+    loading: destinationLoading,
+    error: destinationError,
+  }: QueryResult = useQuery(GET_SINGLE_DESTINATION, {
+    variables: { getDestinationId: destinationId },
+  });
+
   const defaultImg =
     "https://firebasestorage.googleapis.com/v0/b/marketingform-d32c3.appspot.com/o/bannerImages%2Fbackground.png?alt=media&token=4c357a20-703d-41df-a5e0-b1f1a585a4a1";
-  const { selectedDestination } = useDataStore();
   const imageArray: string[] = selectedDestination?.images?.map(
     (el) => el.imageUrl
   );
@@ -79,6 +93,28 @@ const EditDestinationPage = () => {
   const [toOccasion, setToOccasion] = useState(
     selectedDestination.toOccasion || ""
   );
+  React.useEffect(() => {
+    if (destinationData)
+      setSelectedDestination(destinationData?.getDestination);
+    setDestinationName(destinationData?.getDestination?.destinationName || "");
+    setBannerImage(destinationData?.getDestination?.bannerImage || defaultImg);
+    setToOccasion(destinationData?.getDestination.toOccasion || "");
+    setFromOccasion(destinationData?.getDestination.fromOccasion || "");
+    setBestTime({
+      fromDate: destinationData?.getDestination.fromDate || "",
+      toDate: destinationData?.getDestination.toDate || "",
+    });
+    setIsLoading(!destinationData?.getDestination.id);
+    setIntroduction(destinationData?.getDestination.introduction);
+    setIsPopular(destinationData?.getDestination?.isPopular);
+    setSelectedCountry(destinationData?.getDestination?.country || "");
+    setSelectedContinent(destinationData?.getDestination?.continent || "");
+    setPriority(destinationData?.getDestination?.priority || null);
+    setTagId(destinationData?.getDestination?.tag?.id || "");
+    setImageUrls(imageArray);
+    setDescription(destinationData?.getDestination?.description || "");
+    setBannerHeading(destinationData?.getDestination?.bannerHeading || "");
+  }, [destinationData]);
   useEffect(() => {
     // If selectedTour changes and has an id, we're no longer loading
     if (selectedDestination.id) {
@@ -86,6 +122,9 @@ const EditDestinationPage = () => {
     }
   }, [selectedDestination]);
 
+  useEffect(() => {
+    setSelectedContinent(selectedDestination?.continent || "");
+  }, [selectedDestination]);
   useEffect(() => {
     if (selectedContinent) {
       const continentCountries =
@@ -103,9 +142,6 @@ const EditDestinationPage = () => {
   }, [selectedContinent, countryData]);
   // Initialize destinationId when destinationsData is loaded or when the selected tour changes
 
-  if (isLoading) {
-    return <div>Loading...</div>; // Put your loading spinner or message here
-  }
   const [updateDestination, { data, loading, error }] = useMutation(
     UPDATE_DESTINATION_MUTATION,
     {
@@ -215,11 +251,11 @@ const EditDestinationPage = () => {
     });
   };
 
-  useEffect(() => {
-    if (tagsData) {
-      // Handle fetched tags, perhaps format them if needed, or set them directly in state
-    }
-  }, [tagsData]);
+  // useEffect(() => {
+  //   if (tagsData) {
+  //     // Handle fetched tags, perhaps format them if needed, or set them directly in state
+  //   }
+  // }, [tagsData]);
 
   // Handler for when the continent changes
   const handleContinentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -289,7 +325,16 @@ const EditDestinationPage = () => {
 
     return `${year}-${month}-${day}`;
   };
+  if (destinationLoading) {
+    return <div>Loading...</div>; // Put your loading spinner or message here
+  }
 
+  if (destinationError) {
+    return <div>Error Loading</div>; // Put your loading spinner or message here
+  }
+  if (isLoading) {
+    return <div>Loading...</div>; // Put your loading spinner or message here
+  }
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark">
@@ -559,6 +604,104 @@ const EditDestinationPage = () => {
             <p className="text-xs italic text-red-500">{error.message}</p>
           )}
         </form>
+      </div>
+      <div className="p-6.5 flex flex-col">
+        <h1 className=" text-xl font-semibold">
+          Tours ({destinationLoading || selectedDestination?.tours?.length})
+        </h1>
+        <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {selectedDestination?.tours?.map((tour: any) => (
+            <div
+              onClick={() => navigate(`/edittour/${tour.id}`)}
+              key={tour?.id}
+              className="max-w-sm overflow-hidden transition duration-500 transform rounded shadow-lg hover:cursor-pointer hover:scale-105 relative"
+            >
+              <div className="absolute z-10 py-2 px-4 bg-black rounded-lg">
+                <p>{tour.active ? "Active" : "Inactive"}</p>
+              </div>
+              <div className="relative group">
+                <img
+                  className="object-cover w-full h-48 transition-transform duration-500 ease-in-out group-hover:scale-110"
+                  src={tour?.images[0].imageUrl || ""}
+                  alt={tour?.tourTitle}
+                />
+                <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white  duration-500 ease-in-out bg-black  bg-opacity-60 ">
+                  {tour?.location}
+                </div>
+              </div>
+              <div className="px-6 py-4">
+                <p className="text-base text-gray-700">{tour?.tourTitle}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="p-6.5 flex flex-col">
+        <h1 className=" text-xl font-semibold">
+          Attractions (
+          {destinationLoading || selectedDestination?.attractions?.length})
+        </h1>
+        <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {selectedDestination?.attractions?.map((attraction: any) => (
+            <div
+              key={attraction.id}
+              onClick={() => navigate(`/editattraction/${attraction.id}`)}
+              className="max-w-sm overflow-hidden transition duration-500 transform rounded shadow-lg hover:cursor-pointer hover:scale-105 relative"
+            >
+              <div className="absolute z-10 py-2 px-4 bg-black rounded-lg">
+                <p>{attraction.active ? "Active" : "Inactive"}</p>
+              </div>
+              <div className="relative group">
+                <img
+                  className="object-cover w-full h-48 transition-transform duration-500 ease-in-out group-hover:scale-110"
+                  src={attraction.images[0].imageUrl}
+                  alt={attraction.attractionTitle}
+                />
+                <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white transition-opacity duration-500 ease-in-out bg-black  bg-opacity-60 group-hover:opacity-100">
+                  {attraction.location}
+                </div>
+              </div>
+              <div className="px-6 py-4">
+                <p className="text-base text-gray-700">
+                  {attraction.attractionTitle}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="p-6.5 flex flex-col">
+        <h1 className=" text-xl font-semibold">
+          Things ({destinationLoading || selectedDestination?.things?.length})
+        </h1>
+        <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {selectedDestination?.things?.map((thing: any) => (
+            <>
+              <div
+                key={thing.id}
+                onClick={() => navigate(`/editThing/${thing.id}`)}
+                className="max-w-sm overflow-hidden transition duration-500 transform rounded shadow-lg hover:cursor-pointer hover:scale-105 relative"
+              >
+                <div className="absolute z-10 py-2 px-4 bg-black rounded-lg">
+                  <p>{thing.active ? "Active" : "Inactive"}</p>
+                </div>
+                <div className="relative group">
+                  <img
+                    className="object-cover w-full h-48 transition-transform duration-500 ease-in-out group-hover:scale-110"
+                    src={thing.images[0].imageUrl}
+                    alt={thing.thingTitle}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white transition-opacity duration-500 ease-in-out bg-black opacity-0 bg-opacity-60 group-hover:opacity-100">
+                    {thing.destination?.destinationName}
+                  </div>
+                </div>
+                <div className="px-6 py-4">
+                  <p className="text-base text-gray-700">{thing.thingTitle}</p>
+                </div>
+              </div>
+            </>
+          ))}
+        </div>
       </div>
       {showErrorModal && <ErrorModal setErrorModalOpen={setShowErrorModal} />}
     </div>
