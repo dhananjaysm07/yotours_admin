@@ -51,7 +51,7 @@ const AllThingsPage: React.FC = () => {
     totalPage,
     setCurrentPage,
   } = useThingPaginationStore();
-  // console.log("thing dataaaa", dataList, totalPage);
+  // console.log("thing? dataaaa", dataList, totalPage);
   const pageArr = new Array(totalPage).fill(0);
   const [loading, setLoading] = React.useState(false);
   const [err, setErr] = React.useState("");
@@ -152,25 +152,25 @@ const AllThingsPage: React.FC = () => {
           })
           .map((thing: Thing) => (
             <div
-              key={thing.id}
+              key={thing?.id}
               onClick={() => handleSelectThing(thing)}
               className="max-w-sm overflow-hidden transition duration-500 transform rounded shadow-lg hover:cursor-pointer hover:scale-105 relative"
             >
               <div className="absolute z-10 py-2 px-4 bg-black rounded-lg">
-                <p>{thing.active ? "Active" : "Inactive"}</p>
+                <p>{thing?.active ? "Active" : "Inactive"}</p>
               </div>
               <div className="relative group">
                 <img
                   className="object-cover w-full h-48 transition-transform duration-500 ease-in-out group-hover:scale-110"
-                  src={thing.images[0].imageUrl}
-                  alt={thing.thingTitle}
+                  src={thing?.images[0].imageUrl}
+                  alt={thing?.thingTitle}
                 />
                 <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white transition-opacity duration-500 ease-in-out bg-black opacity-0 bg-opacity-60 group-hover:opacity-100">
-                  {thing.destination?.destinationName}
+                  {thing?.destination?.destinationName}
                 </div>
               </div>
               <div className="px-6 py-4">
-                <p className="text-base text-gray-700">{thing.thingTitle}</p>
+                <p className="text-base text-gray-700">{thing?.thingTitle}</p>
               </div>
             </div>
           ))}

@@ -156,26 +156,26 @@ const AllAttractionsPage: React.FC = () => {
           })
           .map((attraction: any) => (
             <div
-              key={attraction.id}
+              key={attraction?.id}
               onClick={() => handleSelectAttraction(attraction)}
               className="max-w-sm overflow-hidden transition duration-500 transform rounded shadow-lg hover:cursor-pointer hover:scale-105 relative"
             >
               <div className="absolute z-10 py-2 px-4 bg-black rounded-lg">
-                <p>{attraction.active ? "Active" : "Inactive"}</p>
+                <p>{attraction?.active ? "Active" : "Inactive"}</p>
               </div>
               <div className="relative group">
                 <img
                   className="object-cover w-full h-48 transition-transform duration-500 ease-in-out group-hover:scale-110"
-                  src={attraction.images[0].imageUrl}
-                  alt={attraction.attractionTitle}
+                  src={attraction?.images[0].imageUrl}
+                  alt={attraction?.attractionTitle}
                 />
                 <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white transition-opacity duration-500 ease-in-out bg-black  bg-opacity-60 group-hover:opacity-100">
-                  {attraction.destination?.destinationName}
+                  {attraction?.destination?.destinationName}
                 </div>
               </div>
               <div className="px-6 py-4">
                 <p className="text-base text-gray-700">
-                  {attraction.attractionTitle}
+                  {attraction?.attractionTitle}
                 </p>
               </div>
             </div>

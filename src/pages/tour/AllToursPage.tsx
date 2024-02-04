@@ -165,7 +165,7 @@ const AllToursPage: React.FC = () => {
               className="max-w-sm overflow-hidden transition duration-500 transform rounded shadow-lg hover:cursor-pointer hover:scale-105 relative"
             >
               <div className="absolute z-10 py-2 px-4 bg-black rounded-lg">
-                <p>{tour.active ? "Active" : "Inactive"}</p>
+                <p>{tour?.active ? "Active" : "Inactive"}</p>
               </div>
               <div className="relative group">
                 <img
