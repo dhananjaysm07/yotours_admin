@@ -202,7 +202,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   );
                 }}
               </SidebarLinkGroup>
-             
 
               <SidebarLinkGroup
                 activeCondition={
@@ -226,7 +225,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             : setSidebarExpanded(true);
                         }}
                       >
-                       <BsPinMap/>
+                        <BsPinMap />
                         Destination
                         <BsChevronDown className="absolute -translate-y-1/2 right-4 top-1/2 " />
                       </NavLink>
@@ -237,7 +236,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         }`}
                       >
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                          
                           <li>
                             <NavLink
                               to="/alldestinations"
@@ -289,7 +287,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             : setSidebarExpanded(true);
                         }}
                       >
-                        <BsAirplane/>
+                        <BsAirplane />
                         Tour
                         <BsChevronDown className="absolute -translate-y-1/2 right-4 top-1/2 " />
                       </NavLink>
@@ -362,7 +360,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             : setSidebarExpanded(true);
                         }}
                       >
-                        <BsTicketDetailedFill/>
+                        <BsTicketDetailedFill />
                         Attraction
                         <BsChevronDown className="absolute -translate-y-1/2 right-4 top-1/2 " />
                       </NavLink>
@@ -435,7 +433,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             : setSidebarExpanded(true);
                         }}
                       >
-                        <BsCardImage/>
+                        <BsCardImage />
                         Thing
                         <BsChevronDown className="absolute -translate-y-1/2 right-4 top-1/2 " />
                       </NavLink>
@@ -486,15 +484,89 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   );
                 }}
               </SidebarLinkGroup>
+              {/* ////////////////////////////////////////CAR///////////////////////////////////////////////////////////////////////////////////// */}
+              <SidebarLinkGroup
+                activeCondition={
+                  pathname === "/car" || pathname.includes("package")
+                }
+              >
+                {(handleClick, open) => {
+                  return (
+                    <React.Fragment>
+                      <NavLink
+                        to="#"
+                        className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                          (pathname === "/destination" ||
+                            pathname.includes("destination")) &&
+                          "bg-graydark dark:bg-meta-4"
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          sidebarExpanded
+                            ? handleClick()
+                            : setSidebarExpanded(true);
+                        }}
+                      >
+                        <BsCardImage />
+                        Car
+                        <BsChevronDown className="absolute -translate-y-1/2 right-4 top-1/2 " />
+                      </NavLink>
+                      {/* <!-- Dropdown Menu Start --> */}
+                      <div
+                        className={`translate transform overflow-hidden ${
+                          !open && "hidden"
+                        }`}
+                      >
+                        <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
+                          {/* <li>
+                              <NavLink
+                                to="/forms/form-elements"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Form Elements
+                              </NavLink>
+                            </li> */}
+                          <li>
+                            <NavLink
+                              to="/allcars"
+                              className={({ isActive }) =>
+                                "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white " +
+                                (isActive && "!text-white")
+                              }
+                            >
+                              All Cars
+                            </NavLink>
+                          </li>
+                          <li>
+                            <NavLink
+                              to="/create-car"
+                              className={({ isActive }) =>
+                                "group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white " +
+                                (isActive && "!text-white")
+                              }
+                            >
+                              Create Car
+                            </NavLink>
+                          </li>
+                        </ul>
+                      </div>
+                      {/* <!-- Dropdown Menu End --> */}
+                    </React.Fragment>
+                  );
+                }}
+              </SidebarLinkGroup>
+
               <li>
                 <NavLink
                   to="/content"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                    pathname.includes("content") &&
-                    "bg-graydark dark:bg-meta-4"
+                    pathname.includes("content") && "bg-graydark dark:bg-meta-4"
                   }`}
                 >
-                  <BsReceipt/>
+                  <BsReceipt />
                   Content
                 </NavLink>
               </li>
@@ -506,7 +578,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     "bg-graydark dark:bg-meta-4"
                   }`}
                 >
-                  <BsGearFill/>
+                  <BsGearFill />
                   Settings
                 </NavLink>
               </li>

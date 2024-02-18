@@ -24,6 +24,9 @@ import AllThingsPage from "./pages/thing/AllThingsPage";
 import CreateThingPage from "./pages/thing/CreateThingPage";
 import EditThingPage from "./pages/thing/EditThingPage";
 import ContentPage from "./pages/content/ContentPage";
+import CreateCar from "./pages/car/CreateCar";
+import AllCarsPage from "./pages/car/AllCar";
+import EditCarPage from "./pages/car/EditCar";
 
 function App() {
   //page refresh at any location is leading me to root page
@@ -82,6 +85,9 @@ function App() {
             <Route path="create-thing" element={<CreateThingPage />} />
             <Route path="allthings" element={<AllThingsPage />} />
             <Route path="editthing/:thingId" element={<EditThingPage />} />
+            <Route path="create-car" element={<CreateCar />} />
+            <Route path="allcars" element={<AllCarsPage />} />
+            <Route path="editcar/:carId" element={<EditCarPage />} />
 
             <Route path="content" element={<ContentPage />} />
           </Route>

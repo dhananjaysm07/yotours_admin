@@ -19,6 +19,7 @@ import { Tour } from "./AllToursPage";
 import { useDataStore } from "../../store/store";
 import { useNavigate, useParams } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
+import { priorityList } from "../../utils/role";
 
 type GetToursQueryResponse = {
   getTours: Tour[];
@@ -56,8 +57,11 @@ const EditTourPage = () => {
   const [tourHyperlink, setTourHyperlink] = useState(
     selectedTour?.tourHyperlink || ""
   );
+  const [priority, setPriority] = useState<number | null>(
+    selectedTour?.priority || null
+  );
   const [isUploading, setIsUploading] = useState(false);
-  const [isLoading, setIsLoading] = useState(!selectedTour.id);
+  // const [isLoading, setIsLoading] = useState(!selectedTour.id);
   const [tourBokunId, setTourBokunId] = useState(
     selectedTour?.tourBokunId || ""
   );
@@ -79,53 +83,51 @@ const EditTourPage = () => {
       setTourPrice(tourData?.findOne?.price || "");
       setTourTitle(tourData?.findOne?.tourTitle || "");
       setIsActive(tourData?.findOne?.active || false);
+      setPriority(tourData?.findOne?.priority || null);
     }
   }, [tourData]);
 
   useEffect(() => {
     // If selectedTour changes and has an id, we're no longer loading
     if (tourData) {
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   }, [tourData]);
   // Initialize destinationId when destinationsData is loaded or when the selected tour changes
 
-  const [updateTour, { data, loading, error }] = useMutation(
-    UPDATE_TOUR_MUTATION,
-    {
-      update(cache, { data: { updateTour } }) {
-        // Retrieve the current tour list from the cache
-        const existingTours = cache.readQuery<GetToursQueryResponse>({
-          query: GET_TOURS_QUERY,
-        });
+  const [updateTour, { loading, error }] = useMutation(UPDATE_TOUR_MUTATION, {
+    update(cache, { data: { updateTour } }) {
+      // Retrieve the current tour list from the cache
+      const existingTours = cache.readQuery<GetToursQueryResponse>({
+        query: GET_TOURS_QUERY,
+      });
 
-        if (existingTours) {
-          // Find the index of the tour that was updated
-          const updatedTourIndex = existingTours.getTours.findIndex(
-            (tour) => tour.id === updateTour.id
-          );
+      if (existingTours) {
+        // Find the index of the tour that was updated
+        const updatedTourIndex = existingTours.getTours.findIndex(
+          (tour) => tour.id === updateTour.id
+        );
 
-          if (updatedTourIndex > -1) {
-            // Replace the old tour with the updated one
-            const updatedTours = [
-              ...existingTours.getTours.slice(0, updatedTourIndex),
-              updateTour,
-              ...existingTours.getTours.slice(updatedTourIndex + 1),
-            ];
+        if (updatedTourIndex > -1) {
+          // Replace the old tour with the updated one
+          const updatedTours = [
+            ...existingTours.getTours.slice(0, updatedTourIndex),
+            updateTour,
+            ...existingTours.getTours.slice(updatedTourIndex + 1),
+          ];
 
-            // Write the updated list back to the cache
-            cache.writeQuery({
-              query: GET_TOURS_QUERY,
-              data: { getTours: updatedTours },
-            });
-          }
+          // Write the updated list back to the cache
+          cache.writeQuery({
+            query: GET_TOURS_QUERY,
+            data: { getTours: updatedTours },
+          });
         }
-      },
-      refetchQueries: [
-        GET_TOURS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
-      ],
-    }
-  );
+      }
+    },
+    refetchQueries: [
+      GET_TOURS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
+    ],
+  });
   const [deleteTour] = useMutation(DELETE_TOUR_MUTATION, {
     update(cache, { data: { deleteTour } }) {
       // Retrieve the current tour list from the cache
@@ -248,6 +250,7 @@ const EditTourPage = () => {
             imageUrls: [tourImage],
             destinationId: destinationId,
             tagId: tagId, // This is the tag ID selected from the dropdown
+            priority,
           },
         },
       });
@@ -462,6 +465,29 @@ const EditTourPage = () => {
             {tagsError && (
               <p className="text-xs italic text-red-500">{tagsError.message}</p>
             )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="priorityID"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Priority
+            </label>
+            <select
+              id="prorityID"
+              value={priority || ""}
+              onChange={(e) => setPriority(Number(e.target.value))}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              // disabled={tagsLoading}
+            >
+              <option value="">Select a priority (optional)</option>
+              {Object.values(priorityList) // This will filter out inactive tags
+                .map((el, index) => (
+                  <option key={index} value={Object.keys(priorityList)[index]}>
+                    {el}
+                  </option>
+                ))}
+            </select>
           </div>
           <div className="mb-4">
             <label

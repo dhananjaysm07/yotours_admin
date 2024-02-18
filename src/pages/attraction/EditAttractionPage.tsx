@@ -19,6 +19,7 @@ import { Attraction } from "./AllAttractionsPage";
 import { useDataStore } from "../../store/store";
 import { useNavigate, useParams } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
+import { priorityList } from "../../utils/role";
 
 type GetAttractionsQueryResponse = {
   getAttractions: Attraction[];
@@ -68,6 +69,9 @@ const EditAttractionPage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [priority, setPriority] = useState<number | null>(
+    selectedAttraction?.priority || null
+  );
   const navigate = useNavigate();
   React.useEffect(() => {
     if (attractionData) {
@@ -89,6 +93,7 @@ const EditAttractionPage = () => {
       setPrice(attractionData?.getAttraction?.price || "");
       setAttractionTitle(attractionData?.getAttraction?.attractionTitle || "");
       setIsActive(attractionData?.getAttraction?.active || false);
+      setPriority(attractionData?.getAttraction?.priority || null);
     }
   }, [attractionData]);
   useEffect(() => {
@@ -172,6 +177,7 @@ const EditAttractionPage = () => {
             imageUrls: [attractionImage],
             destinationId: destinationId,
             tagId: tagId, // This is the tag ID selected from the dropdown
+            priority: priority,
           },
         },
       });
@@ -472,6 +478,29 @@ const EditAttractionPage = () => {
             {tagsError && (
               <p className="text-xs italic text-red-500">{tagsError.message}</p>
             )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="priorityID"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Priority
+            </label>
+            <select
+              id="prorityID"
+              value={priority || ""}
+              onChange={(e) => setPriority(Number(e.target.value))}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              // disabled={tagsLoading}
+            >
+              <option value="">Select a priority (optional)</option>
+              {Object.values(priorityList) // This will filter out inactive tags
+                .map((el, index) => (
+                  <option key={index} value={Object.keys(priorityList)[index]}>
+                    {el}
+                  </option>
+                ))}
+            </select>
           </div>
           <div className="mb-4">
             <label

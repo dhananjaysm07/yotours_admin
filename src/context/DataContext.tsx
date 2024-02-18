@@ -2,16 +2,17 @@
 import React, { useContext, createContext } from "react";
 import { useQuery, QueryResult } from "@apollo/client";
 import {
-  GET_ATTRACTIONS_QUERY,
+  // GET_ATTRACTIONS_QUERY,
   // GET_DESTINATIONS_QUERY,
   GET_FILTERED_ATTRACTIONs,
   GET_FILTERED_DESTINATION,
   GET_FILTERED_TOURS,
-  GET_THINGS_QUERY,
+  // GET_THINGS_QUERY,
   GET_DESTINATIONS_LIST_QUERY,
-  GET_TOURS_LIST_QUERY,
+  // GET_TOURS_LIST_QUERY,
   GET_FILTERED_THINGS,
   GET_COUNTRIES_CONTINENTS_QUERY,
+  GET_FILTERED_CARS,
   // GET_TOURS_QUERY,
 } from "../graphql/query";
 import { Destination } from "../components/destination/destination-card";
@@ -34,11 +35,11 @@ interface IDataContext {
   destinationFilteredError: any;
   destinationFilteredLoading: boolean;
   refetchFilteredDestination: any;
-  tourListData: {
-    getTours: Tour[];
-  };
-  tourListLoading: boolean;
-  tourListError: any;
+  // tourListData: {
+  //   getTours: Tour[];
+  // };
+  // tourListLoading: boolean;
+  // tourListError: any;
   tourFilteredData: {
     getFilteredTours: {
       tours: Tour[];
@@ -48,22 +49,22 @@ interface IDataContext {
   tourFilteredLoading: boolean;
   tourFilteredError: any;
   refetch: any;
-  attractionData: {
-    getAttractions: Attraction[];
-  };
-  attractionLoading: boolean;
-  attractionError: any;
+  // attractionData: {
+  //   getAttractions: Attraction[];
+  // };
+  // attractionLoading: boolean;
+  // attractionError: any;
   attractionFilteredData: {
     getAttractions: Attraction[];
   };
   attractionFilteredLoading: boolean;
   attractionFilteredError: any;
   refetchAttraction: any;
-  thingData: {
-    getThings: Thing[];
-  };
-  thingLoading: boolean;
-  thingError: any;
+  // thingData: {
+  //   getThings: Thing[];
+  // };
+  // thingLoading: boolean;
+  // thingError: any;
   refetchThing: any;
   thingFilteredData: {
     GetFilteredThings: {
@@ -73,6 +74,15 @@ interface IDataContext {
   };
   thingFilteredError: any;
   thingFilteredLoading: boolean;
+  carFilteredData: {
+    GetFilteredCars: {
+      cars: Thing[];
+      totalCount: number;
+    };
+  };
+  carFilteredError: any;
+  carFilteredLoading: boolean;
+  refetchCar: any;
   destCCLoading: boolean;
   destCCError: any;
   destCCData: {
@@ -101,22 +111,22 @@ export const DataProvider = ({ children }: Props) => {
     error: destinationListError,
     data: destinationListData,
   }: QueryResult = useQuery(GET_DESTINATIONS_LIST_QUERY);
-  const {
-    loading: tourListLoading,
-    error: tourListError,
-    data: tourListData,
-  }: QueryResult = useQuery(GET_TOURS_LIST_QUERY);
-  const {
-    loading: attractionLoading,
-    error: attractionError,
-    data: attractionData,
-  }: QueryResult = useQuery(GET_ATTRACTIONS_QUERY);
+  // const {
+  //   loading: tourListLoading,
+  //   error: tourListError,
+  //   data: tourListData,
+  // }: QueryResult = useQuery(GET_TOURS_LIST_QUERY);
+  // const {
+  //   loading: attractionLoading,
+  //   error: attractionError,
+  //   data: attractionData,
+  // }: QueryResult = useQuery(GET_ATTRACTIONS_QUERY);
 
-  const {
-    loading: thingLoading,
-    error: thingError,
-    data: thingData,
-  }: QueryResult = useQuery(GET_THINGS_QUERY);
+  // const {
+  //   loading: thingLoading,
+  //   error: thingError,
+  //   data: thingData,
+  // }: QueryResult = useQuery(GET_THINGS_QUERY);
 
   const {
     loading: destinationFilteredLoading,
@@ -182,6 +192,27 @@ export const DataProvider = ({ children }: Props) => {
     },
   });
   const {
+    loading: carFilteredLoading,
+    error: carFilteredError,
+    data: carFilteredData,
+    refetch: refetchCar,
+  } = useQuery(GET_FILTERED_CARS, {
+    variables: {
+      page: 0,
+      loadCount: 0,
+      filter: {
+        priceMin: null,
+        startDate: null,
+        priceMax: null,
+        location: null,
+        endDate: null,
+        tagName: [],
+        continent: [],
+        activeValues: [true, false],
+      },
+    },
+  });
+  const {
     loading: attractionFilteredLoading,
     error: attractionFilteredError,
     data: attractionFilteredData,
@@ -202,6 +233,7 @@ export const DataProvider = ({ children }: Props) => {
       },
     },
   });
+
   const contextValue: IDataContext = {
     // destinationData,
     // destinationError,
@@ -209,12 +241,12 @@ export const DataProvider = ({ children }: Props) => {
     // tourData,
     // tourLoading,
     // tourError,
-    attractionData,
-    attractionLoading,
-    attractionError,
-    thingData,
-    thingLoading,
-    thingError,
+    // attractionData,
+    // attractionLoading,
+    // attractionError,
+    // thingData,
+    // thingLoading,
+    // thingError,
     destinationFilteredLoading,
     destinationFilteredError,
     destinationFilteredData,
@@ -227,9 +259,9 @@ export const DataProvider = ({ children }: Props) => {
     attractionFilteredData,
     attractionFilteredError,
     attractionFilteredLoading,
-    tourListData,
-    tourListError,
-    tourListLoading,
+    // tourListData,
+    // tourListError,
+    // tourListLoading,
     destinationListData,
     destinationListError,
     destinationListLoading,
@@ -237,6 +269,10 @@ export const DataProvider = ({ children }: Props) => {
     thingFilteredData,
     thingFilteredError,
     thingFilteredLoading,
+    refetchCar,
+    carFilteredData,
+    carFilteredError,
+    carFilteredLoading,
     destCCLoading,
     destCCError,
     destCCData,

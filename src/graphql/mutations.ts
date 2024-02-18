@@ -222,6 +222,21 @@ export const CREATE_THING_MUTATION = gql`
   }
 `;
 
+export const CREATE_CAR_MUTATION = gql`
+  mutation CreateCar($createCarInput: CreateCarInput!) {
+    createCar(createCarInput: $createCarInput) {
+      id
+      carTitle
+      carDescription
+      carHyperlink
+      images {
+        id
+        imageUrl
+      }
+    }
+  }
+`;
+
 export const UPDATE_THING_MUTATION = gql`
   mutation UpdateThing($updateThingInput: UpdateThingInput!) {
     updateThing(updateThingInput: $updateThingInput) {
@@ -236,6 +251,21 @@ export const UPDATE_THING_MUTATION = gql`
     }
   }
 `;
+
+export const UPDATE_CAR_MUTATION = gql`
+  mutation UpdateCar($updateCarInput: UpdateCarInput!) {
+    updateCar(updateCarInput: $updateCarInput) {
+      id
+      carTitle
+      carDescription
+      carHyperlink
+      images {
+        imageUrl
+      }
+    }
+  }
+`;
+
 export const DELETE_THING_MUTATION = gql`
   mutation DeleteThing($deleteThingId: String!) {
     deleteThing(id: $deleteThingId) {
@@ -244,9 +274,25 @@ export const DELETE_THING_MUTATION = gql`
   }
 `;
 
+export const DELETE_CAR_MUTATION = gql`
+  mutation DeleteCar($deleteCarId: String!) {
+    deleteCar(id: $deleteCarId) {
+      id
+    }
+  }
+`;
+
 export const ACTIVATE_THING_MUTATION = gql`
   mutation ActivateThing($activateThingId: String!) {
     activateThing(id: $activateThingId) {
+      id
+    }
+  }
+`;
+
+export const ACTIVATE_CAR_MUTATION = gql`
+  mutation ActivateCar($activateCarId: String!) {
+    activateCar(id: $activateCarId) {
       id
     }
   }

@@ -1,21 +1,18 @@
 import React from "react";
 import { Destination } from "../../components/destination/destination-card";
 import { useNavigate } from "react-router";
-import { useAttractionPaginationStore } from "../../store/store";
+import { useCarPaginationStore, useDataStore } from "../../store/store";
 import { useData } from "../../context/DataContext";
 
 interface Image {
   id: string;
   imageUrl: string;
 }
-export interface Attraction {
+export interface Car {
   id: string;
-  attractionTitle: string;
-  price: string;
-  currency: string;
-  location: string;
-  attractionBokunId: string;
-  attractionHyperlink: string;
+  carTitle: string;
+  carDescription: string;
+  carHyperlink: string;
   images: Image[];
   destination: Pick<Destination, "id" | "destinationName">;
   tag: {
@@ -36,13 +33,14 @@ const filter = {
   tagName: [],
   activeValues: [true, false],
 };
-const AllAttractionsPage: React.FC = () => {
-  // const { attractionData, attractionError, attractionLoading } = useData();
+const AllCarsPage: React.FC = () => {
+  // const { thingData, thingError, thingFilteredLoading||loading } = useData();
   const {
-    refetchAttraction,
-    attractionFilteredError,
-    attractionFilteredLoading,
+    refetchCar,
+    carFilteredError,
+    carFilteredLoading,
     destinationListData,
+    // thingFilteredData,
   } = useData();
   const {
     setPaginationData,
@@ -53,7 +51,8 @@ const AllAttractionsPage: React.FC = () => {
     dataList,
     totalPage,
     setCurrentPage,
-  } = useAttractionPaginationStore();
+  } = useCarPaginationStore();
+  console.log("thing? dataaaa", dataList, totalPage);
   const pageArr = new Array(totalPage || 0).fill(0);
   const [loading, setLoading] = React.useState(false);
   const [err, setErr] = React.useState("");
@@ -63,15 +62,12 @@ const AllAttractionsPage: React.FC = () => {
       setLoading(true);
       const pageToBeLoaded =
         Math.floor(currentPage / (loadCount / dataPerPage)) + 1;
-      const dataNew = await refetchAttraction({
+      const dataNew = await refetchCar({
         page: pageToBeLoaded,
         loadCount,
         filter,
       });
-      setNewData(
-        dataNew?.data?.getFilteredAttractions?.attractions,
-        pageToBeLoaded
-      );
+      setNewData(dataNew?.data?.getFilteredCars?.cars || [], pageToBeLoaded);
     } catch (err) {
       console.log(err);
       setErr("Unable to fetch data");
@@ -82,21 +78,20 @@ const AllAttractionsPage: React.FC = () => {
   const handleRefetchDataForFirstTime = async () => {
     try {
       setLoading(true);
-      const dataNew = await refetchAttraction({
+      const dataNew = await refetchCar({
         page: 1,
         loadCount,
         filter,
       });
       // console.log("data new", dataNew);
-      setPaginationData(
-        Math.ceil(
-          dataNew?.data?.getFilteredAttractions?.totalCount / dataPerPage
-        ),
-        0, ///current page
-        1, ////page loaded from api
-        dataNew?.data?.getFilteredAttractions?.totalCount,
-        dataNew?.data?.getFilteredAttractions?.attractions
-      );
+      if (dataNew?.data)
+        setPaginationData(
+          Math.ceil(dataNew?.data?.getFilteredCars?.totalCount / dataPerPage),
+          0, ///current page
+          1, ////page loaded from api
+          dataNew?.data?.getFilteredCars?.totalCount || 0,
+          dataNew?.data?.getFilteredCars?.cars
+        );
     } catch (err) {
       console.log(err);
       setErr("Unable to fetch data");
@@ -117,16 +112,14 @@ const AllAttractionsPage: React.FC = () => {
   React.useEffect(() => {
     setPaginationData(0, 0, 0, 0, []);
   }, [filter]);
-  // console.log(attractionData);
-  // const { setSelectedAttraction } = useDataStore();
+  const { setSelectedCar } = useDataStore();
   const navigate = useNavigate();
-  if (loading || attractionFilteredLoading)
-    return <p>Loading attractions...</p>;
-  if (err || attractionFilteredError) return <p>Error loading attractions</p>;
-  // Call this function when an attraction card is clicked
-  const handleSelectAttraction = (attraction: Attraction) => {
-    // setSelectedAttraction(attraction);
-    navigate(`/editattraction/${attraction.id}`);
+  if (carFilteredLoading || loading) return <p>Loading cars...</p>;
+  if (carFilteredError || err) return <p>Error loading cars</p>;
+  // Call this function carFilteredLoading an thing card is clicked
+  const handleSelectThing = (car: Car) => {
+    setSelectedCar(car);
+    navigate(`/editCar/${car.id}`);
   };
   return (
     <>
@@ -155,29 +148,27 @@ const AllAttractionsPage: React.FC = () => {
             if (!destinationID) return true;
             else return data.destination.id == destinationID;
           })
-          .map((attraction: any) => (
+          .map((car: Car) => (
             <div
-              key={attraction?.id}
-              onClick={() => handleSelectAttraction(attraction)}
+              key={car?.id}
+              onClick={() => handleSelectThing(car)}
               className="max-w-sm overflow-hidden transition duration-500 transform rounded shadow-lg hover:cursor-pointer hover:scale-105 relative"
             >
               <div className="absolute z-10 py-2 px-4 bg-black rounded-lg">
-                <p>{attraction?.active ? "Active" : "Inactive"}</p>
+                <p>{car?.active ? "Active" : "Inactive"}</p>
               </div>
               <div className="relative group">
                 <img
                   className="object-cover w-full h-48 transition-transform duration-500 ease-in-out group-hover:scale-110"
-                  src={attraction?.images[0].imageUrl}
-                  alt={attraction?.attractionTitle}
+                  src={car?.images[0].imageUrl}
+                  alt={car?.carTitle}
                 />
-                <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white transition-opacity duration-500 ease-in-out bg-black  bg-opacity-60 group-hover:opacity-100">
-                  {attraction?.destination?.destinationName}
+                <div className="absolute bottom-0 left-0 right-0 p-2 text-lg font-bold text-white transition-opacity duration-500 ease-in-out bg-black opacity-0 bg-opacity-60 group-hover:opacity-100">
+                  {car?.destination?.destinationName}
                 </div>
               </div>
               <div className="px-6 py-4">
-                <p className="text-base text-gray-700">
-                  {attraction?.attractionTitle}
-                </p>
+                <p className="text-base text-gray-700">{car?.carTitle}</p>
               </div>
             </div>
           ))}
@@ -203,4 +194,4 @@ const AllAttractionsPage: React.FC = () => {
   );
 };
 
-export default AllAttractionsPage;
+export default AllCarsPage;

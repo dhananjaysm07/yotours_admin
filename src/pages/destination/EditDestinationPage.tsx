@@ -1,11 +1,11 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { QueryResult, useMutation, useQuery } from "@apollo/client";
 import {
-  CREATE_DESTINATION_MUTATION,
+  // CREATE_DESTINATION_MUTATION,
   UPDATE_DESTINATION_MUTATION,
 } from "../../graphql/mutations";
 import DestinationPhotos from "../../components/settings/destination-photos";
-import DestinationBanner from "../../components/settings/destination-banner";
+// import DestinationBanner from "../../components/settings/destination-banner";
 import {
   GET_DESTINATIONS_QUERY,
   GET_SINGLE_DESTINATION,
@@ -22,7 +22,7 @@ import { useNavigate, useParams } from "react-router";
 import { BestTime, DateInput } from "./CreateDestinationPage";
 import TncComponent from "../../components/general/tnc-input-component";
 import { priorityList } from "../../utils/role";
-import { Thing } from "../thing/AllThingsPage";
+// import { Thing } from "../thing/AllThingsPage";
 
 type GetDestinationsQueryResponse = {
   getDestinations: Destination[]; // Assuming `Tag` is the type of your tags
@@ -142,7 +142,7 @@ const EditDestinationPage = () => {
   }, [selectedContinent, countryData]);
   // Initialize destinationId when destinationsData is loaded or when the selected tour changes
 
-  const [updateDestination, { data, loading, error }] = useMutation(
+  const [updateDestination, { loading, error }] = useMutation(
     UPDATE_DESTINATION_MUTATION,
     {
       update(cache, { data: { updateDestination } }) {

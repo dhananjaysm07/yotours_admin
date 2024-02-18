@@ -19,6 +19,7 @@ import { Thing } from "./AllThingsPage";
 import { useDataStore } from "../../store/store";
 import { useNavigate, useParams } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
+import { priorityList } from "../../utils/role";
 
 type GetThingsQueryResponse = {
   getThings: Thing[];
@@ -53,6 +54,9 @@ const EditThingPage = () => {
 
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(!selectedThing.id);
+  const [priority, setPriority] = useState<number | null>(
+    selectedThing?.priority || null
+  );
   const [isActive, setIsActive] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,6 +73,7 @@ const EditThingPage = () => {
       setThingDescription(thingData?.getThing?.thingDescription || "");
       setThingTitle(thingData?.getThing?.thingTitle || "");
       setIsActive(thingData?.getThing?.active || false);
+      setPriority(thingData?.getThing?.priority || null);
     }
   }, [thingData]);
 
@@ -134,6 +139,7 @@ const EditThingPage = () => {
             imageUrls: [thingImage],
             destinationId: destinationId,
             tagId: tagId, // This is the tag ID selected from the dropdown
+            priority,
           },
         },
       });
@@ -389,6 +395,29 @@ const EditThingPage = () => {
             {tagsError && (
               <p className="text-xs italic text-red-500">{tagsError.message}</p>
             )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="priorityID"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Priority
+            </label>
+            <select
+              id="prorityID"
+              value={priority || ""}
+              onChange={(e) => setPriority(Number(e.target.value))}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              // disabled={tagsLoading}
+            >
+              <option value="">Select a priority (optional)</option>
+              {Object.values(priorityList) // This will filter out inactive tags
+                .map((el, index) => (
+                  <option key={index} value={Object.keys(priorityList)[index]}>
+                    {el}
+                  </option>
+                ))}
+            </select>
           </div>
           <div className="mb-4">
             <label

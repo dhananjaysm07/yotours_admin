@@ -1,60 +1,117 @@
 import React, { useEffect, useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { QueryResult, useMutation, useQuery } from "@apollo/client";
 import {
-  // CREATE_ATTRACTION_MUTATION,
-  CREATE_THING_MUTATION,
+  DELETE_THING_MUTATION,
+  UPDATE_CAR_MUTATION,
+  ACTIVATE_CAR_MUTATION,
+  DELETE_CAR_MUTATION,
 } from "../../graphql/mutations";
 import {
+  GET_CARS_QUERY,
   GET_DESTINATIONS_QUERY,
+  GET_SINGLE_CAR,
   GET_TAGS_QUERY,
   GET_THINGS_QUERY,
-  // GET_TOURS_QUERY,
 } from "../../graphql/query";
 import { Tag } from "../../components/settings/create-tag";
 import { Destination } from "../../components/destination/destination-card";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../../utils/firebase";
-import { Thing } from "./AllThingsPage";
-import { useNavigate } from "react-router";
+import { Car } from "./AllCar";
+import { useDataStore } from "../../store/store";
+import { useNavigate, useParams } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
 import { priorityList } from "../../utils/role";
 
-type GetThingsQueryResponse = {
-  getThings: Thing[];
+type GetCarsQueryResponse = {
+  getCars: Car[];
 };
 
-const CreateThingPage = () => {
-  const [thingTitle, setThingTitle] = useState("");
-  const [thingDescription, setThingDescription] = useState("");
-  const [destinationId, setDestinationId] = useState("");
-  const [tagId, setTagId] = useState("");
-  const [thingImage, setThingImage] = useState("");
+const EditCarPage = () => {
+  // const { selectedThing } = useDataStore();
+  const { selectedCar, setSelectedCar } = useDataStore();
+  const { carId } = useParams();
+  const {
+    data: carData,
+    loading: thingLoading,
+    error: thingError,
+  }: QueryResult = useQuery(GET_SINGLE_CAR, {
+    variables: { getCarId: carId },
+  });
+
+  const [carTitle, setCarTitle] = useState(selectedCar?.carTitle || "");
+  const [carDescription, setCarDescription] = useState(
+    selectedCar?.carDescription || ""
+  );
+  const [carHyperlink, setCarHyperlink] = useState(
+    selectedCar?.carHyperlink || ""
+  );
+  const [destinationId, setDestinationId] = useState(
+    selectedCar?.destination?.id || ""
+  );
+  const [tagId, setTagId] = useState(selectedCar?.tag?.id || "");
+  const [carImage, setCarImage] = useState(
+    selectedCar?.images?.[0]?.imageUrl || ""
+  );
+
   const [isUploading, setIsUploading] = useState(false);
-  const [thingHyperlink, setThingHyperlink] = useState("");
-  const [priority, setPriority] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(!selectedCar.id);
+  const [priority, setPriority] = useState<number | null>(
+    selectedCar?.priority || null
+  );
+  const [isActive, setIsActive] = useState(false);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const navigate = useNavigate();
+  React.useEffect(() => {
+    if (carData) {
+      setSelectedCar(carData?.getCar);
+      setIsLoading(false);
+      setCarImage(carData?.getCar?.images?.[0]?.imageUrl || "");
+      setTagId(carData?.getCar?.tag?.id || "");
+      setDestinationId(carData?.getCar?.destination?.id || "");
+      setCarHyperlink(carData?.getCar?.images?.[0]?.imageUrl || "");
+      setCarDescription(carData?.getCar?.carDescription || "");
+      setCarTitle(carData?.getCar?.carTitle || "");
+      setIsActive(carData?.getCar?.active || false);
+      setPriority(carData?.getCar?.priority || null);
+    }
+  }, [carData]);
 
-  const [createThing, { loading, error }] = useMutation(CREATE_THING_MUTATION, {
-    update(cache, { data: { createThing } }) {
-      // Retrieve the current tour list from the cache
-      const existingThings = cache.readQuery<GetThingsQueryResponse>({
-        query: GET_THINGS_QUERY,
-      });
+  const [updateCar, { data, loading, error }] = useMutation(
+    UPDATE_CAR_MUTATION,
+    {
+      update(cache, { data: { updateCar } }) {
+        const existingCars = cache.readQuery<GetCarsQueryResponse>({
+          query: GET_CARS_QUERY,
+        });
 
-      // Add the new tour to the list
-      const newThings = existingThings
-        ? [...existingThings.getThings, createThing]
-        : [createThing];
+        if (existingCars) {
+          // Find the index of the tour that was updated
+          const updatedThingIndex = existingCars.getCars.findIndex(
+            (thing) => thing.id === updateCar.id
+          );
 
-      // Write the updated list back to the cache
-      cache.writeQuery({
-        query: GET_THINGS_QUERY,
-        data: { getThings: newThings },
-      });
-    },
-  });
+          if (updatedThingIndex > -1) {
+            // Replace the old tour with the updated one
+            const updatedThings = [
+              ...existingCars.getCars.slice(0, updatedThingIndex),
+              updateCar,
+              ...existingCars.getCars.slice(updatedThingIndex + 1),
+            ];
+
+            // Write the updated list back to the cache
+            cache.writeQuery({
+              query: GET_CARS_QUERY,
+              data: { getCars: updatedThings },
+            });
+          }
+        }
+      },
+      refetchQueries: [GET_CARS_QUERY],
+    }
+  );
 
   //Destinations
   const {
@@ -74,22 +131,24 @@ const CreateThingPage = () => {
     setIsSubmitting(true); // Start loading
 
     try {
-      const response = await createThing({
+      const response = await updateCar({
         variables: {
-          createThingInput: {
-            thingTitle: thingTitle,
-            thingDescription: thingDescription,
-            thingHyperlink: thingHyperlink,
-            imageUrls: [thingImage],
+          updateCarInput: {
+            carId: selectedCar.id,
+            carTitle: carTitle,
+            carDescription: carDescription,
+            carHyperlink: carHyperlink,
+            imageUrls: [carImage],
             destinationId: destinationId,
             tagId: tagId, // This is the tag ID selected from the dropdown
             priority,
           },
         },
       });
-      if (response.data.createThing) {
-        navigate("/allthings");
+      if (response.data.updateCar) {
+        navigate("/allcars");
       } else {
+        // Handle no data from mutation
         setShowErrorModal(true);
       }
     } catch (err) {
@@ -113,73 +172,180 @@ const CreateThingPage = () => {
   ) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) return;
-
     const uniqueId =
       new Date().getTime() + "_" + Math.random().toString(36).slice(2, 11);
 
     // If thingTitle is available, use it in the file name, otherwise use the unique identifier
-    const fileNamePrefix = thingTitle.trim()
-      ? thingTitle.replace(/[^a-zA-Z0-9]/g, "_")
-      : `thing_${uniqueId}`;
+    const fileNamePrefix = carTitle.trim()
+      ? carTitle.replace(/[^a-zA-Z0-9]/g, "_")
+      : `car_${uniqueId}`;
     const fileName = `${fileNamePrefix}_${file.name}`;
-
-    const storageRef = ref(storage, `thingImages/${fileName}`);
+    const storageRef = ref(storage, `carImages/${fileName}`);
     try {
       setIsUploading(true);
       await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(storageRef);
-      setThingImage(downloadURL);
+      setCarImage(downloadURL);
     } catch (error) {
       console.error("Error uploading banner image", error);
     } finally {
       setIsUploading(false);
     }
   };
+  const [deleteThing] = useMutation(DELETE_CAR_MUTATION, {
+    update(cache, { data: { deleteThing } }) {
+      // Retrieve the current tour list from the cache
+      const existingTours = cache.readQuery<GetCarsQueryResponse>({
+        query: GET_CARS_QUERY,
+      });
+
+      if (existingTours) {
+        // Filter out the deleted tour from the list
+        const updatedThings = existingTours.getCars.filter(
+          (tour) => tour.id !== deleteThing.id
+        );
+
+        // Write the updated list back to the cache
+        cache.writeQuery({
+          query: GET_CARS_QUERY,
+          data: { getCars: updatedThings },
+        });
+      }
+    },
+    refetchQueries: [
+      GET_CARS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
+    ],
+  });
+
+  const [activateThing] = useMutation(ACTIVATE_CAR_MUTATION, {
+    update(cache, { data: { activateThing } }) {
+      // Retrieve the current tour list from the cache
+      const existingTours = cache.readQuery<GetCarsQueryResponse>({
+        query: GET_CARS_QUERY,
+      });
+
+      if (existingTours) {
+        // Filter out the deleted tour from the list
+        const updatedThings = existingTours.getCars.filter(
+          (tour) => tour.id !== activateThing.id
+        );
+
+        // Write the updated list back to the cache
+        cache.writeQuery({
+          query: GET_CARS_QUERY,
+          data: { getCars: updatedThings },
+        });
+      }
+    },
+    refetchQueries: [
+      GET_CARS_QUERY, // You can also use { query: GET_ATTRACTIONS_QUERY } for more options
+    ],
+  });
+
+  const handleDeleteThing = async () => {
+    // console.log("ffunction called");
+    try {
+      // Call the deleteTour mutation
+      console.log("delete car", selectedCar.id);
+      const res = await deleteThing({
+        variables: {
+          deleteCarId: selectedCar.id,
+        },
+      });
+      console.log("respone", res);
+      if (res?.data?.deleteCar?.id) {
+        navigate("../../allcars");
+      } else {
+        alert("Something went wrong");
+      }
+    } catch (error) {
+      alert("Something went wrong");
+    }
+  };
+  const handleActivateThing = async () => {
+    // console.log("ffunction called");
+    try {
+      // Call the deleteTour mutation
+      const res = await activateThing({
+        variables: {
+          activateCarId: selectedCar.id,
+        },
+      });
+      console.log("respone", res);
+      if (res?.data?.activateCar?.id) {
+        navigate("../../allcars");
+      } else {
+        alert("Something went wrong");
+      }
+    } catch (error) {
+      alert("Something went wrong");
+    }
+  };
+  if (thingLoading) {
+    return <div>Loading...</div>; // Put your loading spinner or message here
+  }
+
+  if (thingError) {
+    return <div>Error Loading</div>; // Put your loading spinner or message here
+  }
 
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark">
+      <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark flex justify-between items-center">
         <h3 className="font-semibold text-black dark:text-white ">
-          Thing Details
+          Car Details
         </h3>
+        <button
+          type="submit"
+          className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
+          onClick={() => {
+            if (isActive) {
+              handleDeleteThing();
+            } else {
+              handleActivateThing();
+            }
+          }}
+        >
+          {isActive ? "Delete" : "Activate"}
+        </button>
       </div>
       <div className="p-6.5">
         <form className="w-full max-w-lg" onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
-              htmlFor="thingTitle"
+              htmlFor="carTitle"
               className="block mb-2 text-sm font-bold text-gray-700"
             >
               Title
             </label>
             <input
               type="text"
-              id="thingTitle"
-              value={thingTitle}
-              onChange={(e) => setThingTitle(e.target.value)}
+              id="carTitle"
+              value={carTitle}
+              onChange={(e) => setCarTitle(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
               required
             />
           </div>
           <div className="mb-4">
             <label
-              htmlFor="thingTitle"
+              htmlFor="carTitle"
               className="block mb-2 text-sm font-bold text-gray-700"
             >
               Description
             </label>
             <input
               type="text"
-              id="thingDescription"
-              value={thingDescription}
-              onChange={(e) => setThingDescription(e.target.value)}
+              id="destinationDescription"
+              value={carDescription}
+              onChange={(e) => setCarDescription(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
               required
             />
           </div>
           <div className="mb-4">
             <label
-              htmlFor="destination"
+              htmlFor="continent"
               className="block mb-2 text-sm font-bold text-gray-700"
             >
               Select Destination
@@ -205,6 +371,7 @@ const CreateThingPage = () => {
               </p>
             )}
           </div>
+
           <div className="mb-4">
             <label
               htmlFor="tagId"
@@ -257,30 +424,43 @@ const CreateThingPage = () => {
           </div>
           <div className="mb-4">
             <label
-              htmlFor="thingHyperlink"
+              htmlFor="toutTitle"
               className="block mb-2 text-sm font-bold text-gray-700"
             >
-              Thing Hyperlink
+              Car Hyperlink
             </label>
             <input
               type="text"
-              id="thingHyperlink"
-              value={thingHyperlink}
-              onChange={(e) => setThingHyperlink(e.target.value)}
+              id="tourTitle"
+              value={carHyperlink}
+              onChange={(e) => setCarHyperlink(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
           </div>
           <div className="mb-4">
             <div className="flex items-center space-x-2">
-              <label className="flex items-center justify-center w-24 h-24 border-2 border-gray-400 border-dashed cursor-pointer">
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={handleBannerUpload}
-                  accept="image/*"
-                />
-                <div className="text-4xl text-gray-500">+</div>
-              </label>
+              {carImage && (
+                <div className="relative flex justify-center w-full">
+                  <img
+                    src={carImage}
+                    alt="Tour"
+                    className="object-cover h-40 rounded-md shadow-md"
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 cursor-pointer"
+                  >
+                    Change
+                  </label>
+                </div>
+              )}
+              <input
+                id="file-upload"
+                type="file"
+                className={carImage ? "hidden" : ""}
+                onChange={handleBannerUpload}
+                accept="image/*"
+              />
               {isUploading && (
                 <div className="flex items-center justify-center">
                   <div className="w-4 h-4 border-2 border-t-2 border-gray-200 rounded-full border-t-blue-600 animate-spin"></div>
@@ -288,23 +468,14 @@ const CreateThingPage = () => {
                 </div>
               )}
             </div>
-            {thingImage && (
-              <div className="flex justify-center w-full">
-                <img
-                  src={thingImage}
-                  alt="Banner"
-                  className="object-cover h-40 rounded-md shadow-md"
-                />
-              </div>
-            )}
           </div>
 
           <button
             type="submit"
-            className="px-4 py-2 font-bold text-white rounded bg-meta-5 hover:bg-blue-700 focus:outline-none focus:shadow-outline"
+            className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
             disabled={loading}
           >
-            {isSubmitting ? "Creating..." : "Create Thing"}
+            {isSubmitting ? "Updating..." : "Update Car"}
           </button>
           {error && (
             <p className="text-xs italic text-red-500">{error.message}</p>
@@ -316,4 +487,4 @@ const CreateThingPage = () => {
   );
 };
 
-export default CreateThingPage;
+export default EditCarPage;

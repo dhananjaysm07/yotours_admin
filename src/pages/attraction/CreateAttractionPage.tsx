@@ -5,7 +5,7 @@ import {
   GET_ATTRACTIONS_QUERY,
   GET_DESTINATIONS_QUERY,
   GET_TAGS_QUERY,
-  GET_TOURS_QUERY,
+  // GET_TOURS_QUERY,
 } from "../../graphql/query";
 import { Tag } from "../../components/settings/create-tag";
 import { Destination } from "../../components/destination/destination-card";
@@ -14,6 +14,7 @@ import app from "../../utils/firebase";
 import { Attraction } from "./AllAttractionsPage";
 import { useNavigate } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
+import { priorityList } from "../../utils/role";
 
 type GetAttractionsQueryResponse = {
   getAttractions: Attraction[];
@@ -30,11 +31,12 @@ const CreateAttractionPage = () => {
   const [attractionImage, setAttractionImage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [attractionHyperlink, setAttractionHyperlink] = useState("");
+  const [priority, setPriority] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const navigate = useNavigate();
 
-  const [createAttraction, { data, loading, error }] = useMutation(
+  const [createAttraction, { _, loading, error }] = useMutation(
     CREATE_ATTRACTION_MUTATION,
     {
       update(cache, { data: { createAttraction } }) {
@@ -87,6 +89,7 @@ const CreateAttractionPage = () => {
             attractionBokunId: attractionBokunId,
             attractionHyperlink: attractionHyperlink,
             tagId: tagId, // This is the tag ID selected from the dropdown
+            priority: priority || 1,
           },
         },
       });
@@ -118,9 +121,12 @@ const CreateAttractionPage = () => {
   ) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) return;
-    
-    const uniqueId = new Date().getTime() + '_' + Math.random().toString(36).slice(2, 11);
-    const fileNamePrefix = attractionTitle.trim() ? attractionTitle.replace(/[^a-zA-Z0-9]/g, '_') : `attraction_${uniqueId}`;
+
+    const uniqueId =
+      new Date().getTime() + "_" + Math.random().toString(36).slice(2, 11);
+    const fileNamePrefix = attractionTitle.trim()
+      ? attractionTitle.replace(/[^a-zA-Z0-9]/g, "_")
+      : `attraction_${uniqueId}`;
     const fileName = `${fileNamePrefix}_${file.name}`;
     const storageRef = ref(storage, `attractionImages/${fileName}`);
     try {
@@ -271,6 +277,29 @@ const CreateAttractionPage = () => {
             {tagsError && (
               <p className="text-xs italic text-red-500">{tagsError.message}</p>
             )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="priorityID"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Priority
+            </label>
+            <select
+              id="prorityID"
+              value={priority || ""}
+              onChange={(e) => setPriority(Number(e.target.value))}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              // disabled={tagsLoading}
+            >
+              <option value="">Select a priority (optional)</option>
+              {Object.values(priorityList) // This will filter out inactive tags
+                .map((el, index) => (
+                  <option key={index} value={Object.keys(priorityList)[index]}>
+                    {el}
+                  </option>
+                ))}
+            </select>
           </div>
           <div className="mb-4">
             <label

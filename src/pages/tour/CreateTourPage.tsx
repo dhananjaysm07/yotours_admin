@@ -13,6 +13,7 @@ import app from "../../utils/firebase";
 import { Tour } from "./AllToursPage";
 import { useNavigate } from "react-router";
 import { ErrorModal } from "../../components/common/ErrorModal";
+import { priorityList } from "../../utils/role";
 
 type GetToursQueryResponse = {
   getTours: Tour[];
@@ -31,11 +32,12 @@ const CreateTourPage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [priority, setPriority] = useState<number | null>(null);
   const navigate = useNavigate();
   const defaultImg =
     "https://firebasestorage.googleapis.com/v0/b/marketingform-d32c3.appspot.com/o/bannerImages%2Fbackground.png?alt=media&token=4c357a20-703d-41df-a5e0-b1f1a585a4a1";
   const [tourImage, setTourImage] = useState("");
-  const [createTour, { data, loading, error }] = useMutation(
+  const [createTour, {  loading, error }] = useMutation(
     CREATE_TOUR_MUTATION,
     {
       update(cache, { data: { createTour } }) {
@@ -87,6 +89,7 @@ const CreateTourPage = () => {
             destinationId: destinationId,
             tagId: tagId, // This is the tag ID selected from the dropdown
             tourBokunId: tourBokunId,
+            priority,
           },
         },
       });
@@ -118,9 +121,12 @@ const CreateTourPage = () => {
   ) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) return;
-    
-    const uniqueId = new Date().getTime() + '_' + Math.random().toString(36).slice(2, 11);
-    const fileNamePrefix = tourTitle.trim() ? tourTitle.replace(/[^a-zA-Z0-9]/g, '_') : `tour_${uniqueId}`;
+
+    const uniqueId =
+      new Date().getTime() + "_" + Math.random().toString(36).slice(2, 11);
+    const fileNamePrefix = tourTitle.trim()
+      ? tourTitle.replace(/[^a-zA-Z0-9]/g, "_")
+      : `tour_${uniqueId}`;
     const fileName = `${fileNamePrefix}_${file.name}`;
     const storageRef = ref(storage, `tourImages/${fileName}`);
     try {
@@ -231,7 +237,6 @@ const CreateTourPage = () => {
               id="currency"
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
               onChange={(e) => setCurrency(e.target.value)} // Assuming you have a state setter function for currency
-              
             >
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
@@ -274,6 +279,29 @@ const CreateTourPage = () => {
             {tagsError && (
               <p className="text-xs italic text-red-500">{tagsError.message}</p>
             )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="priorityID"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Priority
+            </label>
+            <select
+              id="prorityID"
+              value={priority || ""}
+              onChange={(e) => setPriority(Number(e.target.value))}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              // disabled={tagsLoading}
+            >
+              <option value="">Select a priority (optional)</option>
+              {Object.values(priorityList) // This will filter out inactive tags
+                .map((el, index) => (
+                  <option key={index} value={Object.keys(priorityList)[index]}>
+                    {el}
+                  </option>
+                ))}
+            </select>
           </div>
           <div className="mb-4">
             <label

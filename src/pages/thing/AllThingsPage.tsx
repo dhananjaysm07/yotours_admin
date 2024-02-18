@@ -20,6 +20,7 @@ export interface Thing {
     name: string;
   };
   active: boolean;
+  priority: number;
 }
 const filter = {
   priceMin: null,

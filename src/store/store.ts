@@ -3,6 +3,7 @@ import { Tour } from "../pages/tour/AllToursPage";
 import { Destination } from "../components/destination/destination-card";
 import { Attraction } from "../pages/attraction/AllAttractionsPage";
 import { Thing } from "../pages/thing/AllThingsPage";
+import { Car } from "../pages/car/AllCar";
 
 //lets add destinations and attractions here
 
@@ -21,6 +22,8 @@ interface DataStore {
   setSelectedAttraction: (attraction: Attraction) => void;
   selectedThing: Thing;
   setSelectedThing: (thing: Thing) => void;
+  selectedCar: Car;
+  setSelectedCar: (car: Car) => void;
 }
 export const useDataStore = create<DataStore>((set) => ({
   tours: [],
@@ -42,10 +45,12 @@ export const useDataStore = create<DataStore>((set) => ({
     price: "",
     currency: "USD",
     tourTitle: "",
+    active: false,
     tag: {
       id: "",
       name: "",
     },
+    priority: 0,
   },
   selectedDestination: {
     id: "",
@@ -67,6 +72,9 @@ export const useDataStore = create<DataStore>((set) => ({
     toOccasion: "",
     introduction: "",
     priority: 0,
+    tours: [],
+    attractions: [],
+    things: [],
   },
   selectedAttraction: {
     id: "",
@@ -85,6 +93,8 @@ export const useDataStore = create<DataStore>((set) => ({
       id: "",
       name: "",
     },
+    active: false,
+    priority: 0,
   },
   selectedThing: {
     id: "",
@@ -100,6 +110,25 @@ export const useDataStore = create<DataStore>((set) => ({
       id: "",
       name: "",
     },
+    active: false,
+    priority: 0,
+  },
+  selectedCar: {
+    id: "",
+    carDescription: "",
+    carHyperlink: "",
+    carTitle: "",
+    destination: {
+      id: "",
+      destinationName: "",
+    },
+    images: [],
+    tag: {
+      id: "",
+      name: "",
+    },
+    active: false,
+    priority: 0,
   },
   setSelectedTour: (tour) => set({ selectedTour: tour }),
   setSelectedDestination: (destination) =>
@@ -107,6 +136,7 @@ export const useDataStore = create<DataStore>((set) => ({
   setSelectedAttraction: (attraction) =>
     set({ selectedAttraction: attraction }),
   setSelectedThing: (thing) => set({ selectedThing: thing }),
+  setSelectedCar: (car) => set({ selectedCar: car }),
 }));
 
 interface PaginationStoreInterface<T> {
@@ -275,6 +305,47 @@ export const useAttractionPaginationStore = create<
 }));
 
 export const useThingPaginationStore = create<PaginationStoreInterface<Thing>>(
+  (set) => ({
+    totalPage: 0, ///Total page from the frontend perspective
+    currentPage: 0,
+    totalPageLoaded: 0, ////Total page from the backend perspective
+    totalResult: 0,
+    dataPerPage: 12,
+    loadCount: 12 * 3, ////Total number of tours to load per api fetch
+    dataList: [],
+    setPaginationData: (
+      totalPage,
+      currentPage,
+      totalPageLoaded,
+      totalResult,
+      dataList
+    ) =>
+      set((state) => {
+        return {
+          ...state,
+          totalPage,
+          currentPage,
+          totalPageLoaded,
+          totalResult,
+          dataList,
+        };
+      }),
+    setCurrentPage: (currentPage) =>
+      set((state) => {
+        return { ...state, currentPage };
+      }),
+    setNewData: (newData, totalPageLoaded) =>
+      set((state) => {
+        return {
+          ...state,
+          totalPageLoaded,
+          dataList: [...state.dataList, ...newData],
+        };
+      }),
+  })
+);
+
+export const useCarPaginationStore = create<PaginationStoreInterface<Car>>(
   (set) => ({
     totalPage: 0, ///Total page from the frontend perspective
     currentPage: 0,

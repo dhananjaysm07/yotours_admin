@@ -1,7 +1,7 @@
 // AllToursPage.tsx
 
 import React from "react";
-import { useDataStore, useTourPaginationStore } from "../../store/store";
+import { useTourPaginationStore } from "../../store/store";
 import { useNavigate } from "react-router";
 import { Destination } from "../../components/destination/destination-card";
 import { useData } from "../../context/DataContext";
@@ -36,6 +36,7 @@ export interface Tour {
     name: string;
   };
   active: boolean;
+  priority: number;
 }
 const AllToursPage: React.FC = () => {
   const {
@@ -158,7 +159,7 @@ const AllToursPage: React.FC = () => {
             if (!destinationID) return true;
             else return data.destination.id == destinationID;
           })
-          .map((tour: any) => (
+          .map((tour: Tour) => (
             <div
               onClick={() => handleSelectTour(tour)}
               key={tour?.id}

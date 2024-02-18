@@ -315,6 +315,7 @@ export const GET_SINGLE_TOUR = gql`
       tourHyperlink
       tourBokunId
       active
+      priority
       images {
         id
         imageUrl
@@ -342,6 +343,7 @@ export const GET_ATTRACTION_QUERY = gql`
       location
       price
       attractionBokunId
+      priority
       destination {
         id
         destinationName
@@ -368,6 +370,7 @@ export const GET_SINGLE_ATTRACTION = gql`
       attractionBokunId
       attractionHyperlink
       active
+      priority
       images {
         id
         imageUrl
@@ -464,6 +467,7 @@ export const GET_THINGS_QUERY = gql`
       thingTitle
       thingDescription
       thingHyperlink
+      priority
       destination {
         id
         destinationName
@@ -487,6 +491,7 @@ export const GET_SINGLE_THING = gql`
       thingTitle
       thingDescription
       thingHyperlink
+      priority
       images {
         id
         imageUrl
@@ -503,6 +508,91 @@ export const GET_SINGLE_THING = gql`
         toDate
       }
       active
+    }
+  }
+`;
+export const GET_CARS_QUERY = gql`
+  query GetCars {
+    getCars {
+      active
+      carDescription
+      carHyperlink
+      carTitle
+      destination {
+        id
+        destinationName
+      }
+      priority
+      images {
+        id
+        imageUrl
+      }
+      tag {
+        active
+        name
+      }
+    }
+  }
+`;
+
+export const GET_FILTERED_CARS = gql`
+  query GetFilteredCars(
+    $page: Int!
+    $loadCount: Int!
+    $filter: TourFilterInput!
+  ) {
+    getFilteredCars(page: $page, loadCount: $loadCount, filter: $filter) {
+      cars {
+        active
+        carDescription
+        carHyperlink
+        carTitle
+        destination {
+          id
+          country
+          continent
+          destinationName
+        }
+        id
+        images {
+          imageUrl
+          id
+        }
+        priority
+        tag {
+          id
+          name
+          active
+        }
+      }
+    }
+  }
+`;
+
+export const GET_SINGLE_CAR = gql`
+  query GetCar($getCarId: String!) {
+    getCar(id: $getCarId) {
+      active
+      carDescription
+      carHyperlink
+      carTitle
+      destination {
+        destinationName
+        fromDate
+        toDate
+        id
+      }
+      id
+      images {
+        imageUrl
+        id
+      }
+      priority
+      tag {
+        id
+        name
+        active
+      }
     }
   }
 `;
