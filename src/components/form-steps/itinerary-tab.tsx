@@ -17,7 +17,9 @@ const ItineraryFormTab = () => {
       exclusions: [],
     }));
   };
-
+  const handleSubmit = async () => {
+    console.log("itinerary", itinerary);
+  };
   useEffect(() => {
     const numDays = general.durationData.days || 0;
     if (
@@ -60,6 +62,7 @@ const ItineraryFormTab = () => {
               <button
                 type="submit"
                 className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
+                onSubmit={handleSubmit}
               >
                 Next
               </button>

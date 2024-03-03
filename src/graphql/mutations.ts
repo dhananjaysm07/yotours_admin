@@ -20,6 +20,18 @@ export const CREATE_PACKAGE_MUTATION = gql`
   }
 `;
 
+export const CREATE_ITENERARY_MUTATION = gql`
+  mutation AddItineraryToPackage(
+    $packageId: ID!
+    $itineraryInput: [ItineraryInput!]!
+  ) {
+    addItineraryToPackage(
+      packageId: $packageId
+      itineraryInput: $itineraryInput
+    )
+  }
+`;
+
 export const UPDATE_PACKAGE_MUTATION = gql`
   mutation UpdatePackage(
     $updatePackageGeneralInput: CreatePackageGeneralInput!

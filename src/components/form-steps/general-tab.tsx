@@ -19,16 +19,19 @@ import { useState } from "react";
 import { ErrorModal } from "../common/ErrorModal";
 
 interface CreatePackageGeneralInput {
-  productTitle: string;
-  productType: string;
+  title: string;
+  type: string;
   destinationIds: string[];
-  cityIds: string[];
   dates?: DatesData[];
   summary: string;
   highlights: Highlight[];
   photos: Photo[];
-  createdAt: Date;
-  updatedAt: Date;
+  exclusion: string[];
+  inclusion: string[];
+  id: string;
+  // createdAt: Date;
+  // updatedAt: Date;
+  currentStep: number;
 }
 interface DateDetailsInput {
   bookingFromDate: string;
@@ -82,51 +85,68 @@ const GeneralFormTab = () => {
   //   };
   // };
   const handleSubmit = async () => {
+    console.log("handle submit", {
+      productTitle: basicData.title,
+      productType: basicData.type,
+      destinationIds: basicData.destinations,
+      dates: datesData,
+      summary: summaryData.summary,
+      inclusion: summaryData.inclusions,
+      exclusion: summaryData.exclusions,
+      highlights: summaryData.highlights,
+      photos: summaryData.photos,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
     try {
       const createPackageGeneralInput: CreatePackageGeneralInput = {
-        productTitle: basicData.title,
-        productType: basicData.type,
+        title: basicData.title,
+        type: basicData.type,
         destinationIds: basicData.destinations,
-        cityIds: basicData.cities,
         dates: datesData,
         summary: summaryData.summary,
         highlights: summaryData.highlights,
         photos: summaryData.photos,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        inclusion: summaryData.inclusions,
+        exclusion: summaryData.exclusions,
+        id: packageId || "",
+        // createdAt: new Date(),
+        // updatedAt: new Date(),
+        currentStep: 0,
         //... other fields
       };
 
-      if (packageId) {
-        // Call your update API here
-        const updateResponse = await updatePackageGeneral({
-          variables: {
-            updatePackageGeneralInput: createPackageGeneralInput,
-            id: packageId,
-          },
-        });
+      // if (packageId) {
+      //   // Call your update API here
+      //   const updateResponse = await updatePackageGeneral({
+      //     variables: {
+      //       updatePackageGeneralInput: createPackageGeneralInput,
+      //       id: packageId,
+      //     },
+      //   });
 
-        if (updateError) {
-          console.error("Failed to update package:", updateError);
-          setErrorModalOpen(true);
-          return; // Do not proceed if there's an error
-        }
+      //   if (updateError) {
+      //     console.error("Failed to update package:", updateError);
+      //     setErrorModalOpen(true);
+      //     return; // Do not proceed if there's an error
+      //   }
 
-        console.log("Package updated:", updateResponse.data);
-      } else {
-        const response = await createPackageGeneral({
-          variables: { createPackageGeneralInput: createPackageGeneralInput },
-        });
-
-        if (error) {
-          console.error("Failed to create package:", error);
-          setErrorModalOpen(true);
-          return; // Do not proceed if there's an error
-        }
-
-        console.log("Package created:", response.data);
-        setPackageId(response.data!.createPackageGeneral.id);
+      //   console.log("Package updated:", updateResponse.data);
+      // }
+      // else {
+      console.log("create package.....", createPackageGeneralInput);
+      const response = await createPackageGeneral({
+        variables: { createPackageGeneralInput: createPackageGeneralInput },
+      });
+      if (error) {
+        console.error("Failed to create package:", error);
+        setErrorModalOpen(true);
+        return; // Do not proceed if there's an error
       }
+
+      console.log("Package created:", response.data);
+      setPackageId(response.data!.createPackageGeneral.id);
+      // }
 
       setActiveStep(activeStep + 1); // Increase the active step upon success
     } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import CustomSelect, { OptionType } from "../common/CustomSelect";
 import { useGlobalStore } from "../../store/globalStore";
+import { useData } from "../../context/DataContext";
 // interface BasicDetailsSectionProps {
 //   basicData: BasicData;
 // }
@@ -12,45 +13,52 @@ interface Destination {
   cities: City[];
 }
 
-interface JsonData {
-  destinations: Destination[];
-}
+// interface JsonData {
+//   destinations: Destination[];
+// }
 
-const jsonData: JsonData = {
-  destinations: [
-    {
-      name: "USA",
-      cities: ["New York", "Los Angeles", "Chicago"],
-    },
-    {
-      name: "69790710-08f4-4ffb-9c72-0759af333f8d",
-      cities: ["9acbc8f6-1ae5-4b2a-82b2-a820d0f6eab2", "Delhi", "Bangalore"],
-    },
-    {
-      name: "Australia",
-      cities: ["Sydney", "Melbourne", "Brisbane"],
-    },
-  ],
-};
+// const jsonData: JsonData = {
+//   destinations: [
+//     {
+//       name: "USA",
+//       cities: ["New York", "Los Angeles", "Chicago"],
+//     },
+//     {
+//       name: "69790710-08f4-4ffb-9c72-0759af333f8d",
+//       cities: ["9acbc8f6-1ae5-4b2a-82b2-a820d0f6eab2", "Delhi", "Bangalore"],
+//     },
+//     {
+//       name: "Australia",
+//       cities: ["Sydney", "Melbourne", "Brisbane"],
+//     },
+//   ],
+// };
 
 const BasicDetailsSection: React.FC = () => {
   const { general, setGeneral, errors } = useGlobalStore();
   const { basicData } = general;
+  const { destinationListData } = useData();
   const [destinationOptions, setDestinationOptions] = useState<
     { value: string; label: string }[]
-  >(
-    jsonData.destinations.map((dest) => ({
-      value: dest.name,
-      label: dest.name,
-    }))
-  );
-  const [cityOptions, setCityOptions] = useState<
-    { value: City; label: City }[]
   >([]);
+
+  React.useEffect(() => {
+    if (destinationListData?.getDestinations) {
+      setDestinationOptions(
+        destinationListData?.getDestinations?.map((dest) => ({
+          value: dest.id,
+          label: dest.destinationName,
+        }))
+      );
+    }
+  }, [destinationListData]);
+  // const [cityOptions, setCityOptions] = useState<
+  //   { value: City; label: City }[]
+  // >([]);
   const handleDestinationChange = (selectedDestinations: OptionType[]) => {
     // Update your global state or local state as needed
     // For instance, update the destinations in the global state:
-    findCityOptions(selectedDestinations);
+    // findCityOptions(selectedDestinations);
     const destinationValues = selectedDestinations.map(
       (option) => option.value
     );
@@ -58,47 +66,47 @@ const BasicDetailsSection: React.FC = () => {
       destinations: destinationValues,
     });
   };
-  const findCityOptions = useCallback(
-    (selectedDestinations: OptionType[]) => {
-      if (!jsonData || !jsonData.destinations) return;
-      const allRelatedCities: string[] = [];
+  // const findCityOptions = useCallback(
+  //   (selectedDestinations: OptionType[]) => {
+  //     if (!jsonData || !jsonData.destinations) return;
+  //     const allRelatedCities: string[] = [];
 
-      selectedDestinations.forEach((selectedDestinationOption) => {
-        const selectedDestination = jsonData.destinations.find(
-          (dest) => dest.name === selectedDestinationOption.value
-        );
-        if (selectedDestination) {
-          allRelatedCities.push(...selectedDestination.cities);
-        }
-      });
+  //     selectedDestinations.forEach((selectedDestinationOption) => {
+  //       const selectedDestination = jsonData.destinations.find(
+  //         (dest) => dest.name === selectedDestinationOption.value
+  //       );
+  //       if (selectedDestination) {
+  //         allRelatedCities.push(...selectedDestination.cities);
+  //       }
+  //     });
 
-      // De-duplicate cities
-      const uniqueCities = [...new Set(allRelatedCities)];
+  //     // De-duplicate cities
+  //     const uniqueCities = [...new Set(allRelatedCities)];
 
-      const cityOptionValues = uniqueCities.map((city) => ({
-        value: city,
-        label: city,
-      }));
+  //     const cityOptionValues = uniqueCities.map((city) => ({
+  //       value: city,
+  //       label: city,
+  //     }));
 
-      setCityOptions(cityOptionValues);
-    },
-    [jsonData]
-  );
-  const handleCitySelect = (selectedCities: OptionType[]) => {
-    // Extract values from the selected options
-    const selectedCityValues = selectedCities.map(
-      (cityOption) => cityOption.value
-    );
-    setGeneral("basicData", {
-      cities: selectedCityValues,
-    });
-  };
+  //     setCityOptions(cityOptionValues);
+  //   },
+  //   [jsonData]
+  // );
+  // const handleCitySelect = (selectedCities: OptionType[]) => {
+  //   // Extract values from the selected options
+  //   const selectedCityValues = selectedCities.map(
+  //     (cityOption) => cityOption.value
+  //   );
+  //   setGeneral("basicData", {
+  //     cities: selectedCityValues,
+  //   });
+  // };
 
-  useEffect(() => {
-    findCityOptions(
-      basicData.destinations.map((dest) => ({ value: dest, label: dest }))
-    );
-  }, [basicData.destinations]);
+  // useEffect(() => {
+  //   findCityOptions(
+  //     basicData.destinations.map((dest) => ({ value: dest, label: dest }))
+  //   );
+  // }, [basicData.destinations]);
   return (
     <div className="mb-4.5 bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="border-b bg-gray-3 dark:bg-graydark  border-stroke py-4 px-6.5 dark:border-strokedark">
@@ -163,7 +171,7 @@ const BasicDetailsSection: React.FC = () => {
               }))}
             />
           </div>
-          <div className="w-full xl:w-1/2">
+          {/* <div className="w-full xl:w-1/2">
             <label className="mb-2.5 block text-black dark:text-white">
               Cities
             </label>
@@ -178,9 +186,9 @@ const BasicDetailsSection: React.FC = () => {
                 label: city,
               }))}
             />
-          </div>
-        </div>
-        <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+          </div> */}
+          {/* </div> */}
+          {/* <div className="mb-4.5 flex flex-col gap-6 xl:flex-row"> */}
           <div className="w-full xl:w-1/2">
             <label className="mb-2.5 block text-black dark:text-white">
               Theme
@@ -208,6 +216,8 @@ const BasicDetailsSection: React.FC = () => {
               }}
             />
           </div>
+        </div>
+        <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
           <div className="w-full xl:w-1/2">
             <label className="mb-2.5 block text-black dark:text-white">
               Preferences
