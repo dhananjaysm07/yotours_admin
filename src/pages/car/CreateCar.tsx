@@ -34,6 +34,7 @@ const CreateCar = () => {
   const [priority, setPriority] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [carBokunId, setCarBokunId] = useState("");
   const navigate = useNavigate();
 
   const [createCar, { loading, error }] = useMutation(CREATE_CAR_MUTATION, {
@@ -84,6 +85,7 @@ const CreateCar = () => {
             destinationId: destinationId,
             tagId: tagId, // This is the tag ID selected from the dropdown
             priority,
+            carBokunId,
             // active: true,
           },
         },
@@ -269,6 +271,21 @@ const CreateCar = () => {
               id="carHyperLink"
               value={carHyperLink}
               onChange={(e) => setCarHyperLink(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="attractionBokunId"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Car Bokun ID
+            </label>
+            <input
+              type="text"
+              id="attractionBokunId"
+              value={carBokunId}
+              onChange={(e) => setCarBokunId(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
           </div>

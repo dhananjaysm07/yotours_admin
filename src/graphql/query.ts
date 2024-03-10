@@ -182,6 +182,15 @@ export const GET_SINGLE_DESTINATION = gql`
         }
         active
       }
+      cars {
+        id
+        carTitle
+        images {
+          id
+          imageUrl
+        }
+        active
+      }
     }
   }
 `;
@@ -576,6 +585,7 @@ export const GET_SINGLE_CAR = gql`
       carDescription
       carHyperlink
       carTitle
+      carBokunId
       destination {
         destinationName
         fromDate

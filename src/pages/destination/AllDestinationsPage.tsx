@@ -19,6 +19,7 @@ const AllDestinationsPage: React.FC = () => {
     continent: [],
     country: [],
     tagName: [],
+    activeValues: [true, false],
   });
   const {
     destinationFilteredLoading,

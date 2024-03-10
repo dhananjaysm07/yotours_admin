@@ -59,6 +59,7 @@ const EditCarPage = () => {
   const [priority, setPriority] = useState<number | null>(
     selectedCar?.priority || null
   );
+  const [carBokunId, setCarBokunId] = useState(selectedCar?.carBokunId || "");
   const [isActive, setIsActive] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,6 +67,7 @@ const EditCarPage = () => {
   const navigate = useNavigate();
   React.useEffect(() => {
     if (carData) {
+      // console.log(carData?.getCar);
       setSelectedCar(carData?.getCar);
       setIsLoading(false);
       setCarImage(carData?.getCar?.images?.[0]?.imageUrl || "");
@@ -76,6 +78,7 @@ const EditCarPage = () => {
       setCarTitle(carData?.getCar?.carTitle || "");
       setIsActive(carData?.getCar?.active || false);
       setPriority(carData?.getCar?.priority || null);
+      setCarBokunId(carData?.getCar?.carBokunId);
     }
   }, [carData]);
 
@@ -129,7 +132,7 @@ const EditCarPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true); // Start loading
-
+    // console.log("car bokun id", carBokunId);
     try {
       const response = await updateCar({
         variables: {
@@ -142,6 +145,7 @@ const EditCarPage = () => {
             destinationId: destinationId,
             tagId: tagId, // This is the tag ID selected from the dropdown
             priority,
+            carBokunId,
           },
         },
       });
@@ -434,6 +438,21 @@ const EditCarPage = () => {
               id="tourTitle"
               value={carHyperlink}
               onChange={(e) => setCarHyperlink(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="attractionBokunId"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Car Bokun ID
+            </label>
+            <input
+              type="text"
+              id="attractionBokunId"
+              value={carBokunId}
+              onChange={(e) => setCarBokunId(e.target.value)}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
           </div>

@@ -14,6 +14,7 @@ export type filterType = {
   continent: [string] | [];
   country: [string] | [];
   tagName: [string] | [];
+  activeValues?: Array<boolean>;
 };
 //   interface TourPackage {
 //     basicDetails: {

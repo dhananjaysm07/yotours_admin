@@ -65,6 +65,7 @@ const EditAttractionPage = () => {
 
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(!selectedAttraction.id);
+
   const [isActive, setIsActive] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);

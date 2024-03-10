@@ -56,6 +56,15 @@ export interface Destination {
     };
     active: boolean;
   }>;
+  cars: Array<{
+    id: string;
+    carTitle: string;
+    images: {
+      id: string;
+      imageUrl: string;
+    };
+    active: boolean;
+  }>;
 }
 
 interface DestinationCardProps {

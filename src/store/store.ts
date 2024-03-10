@@ -75,6 +75,7 @@ export const useDataStore = create<DataStore>((set) => ({
     tours: [],
     attractions: [],
     things: [],
+    cars: [],
   },
   selectedAttraction: {
     id: "",
@@ -129,6 +130,7 @@ export const useDataStore = create<DataStore>((set) => ({
     },
     active: false,
     priority: 0,
+    carBokunId: "",
   },
   setSelectedTour: (tour) => set({ selectedTour: tour }),
   setSelectedDestination: (destination) =>

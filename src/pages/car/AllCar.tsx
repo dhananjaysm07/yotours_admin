@@ -21,6 +21,7 @@ export interface Car {
   };
   active: boolean;
   priority: number;
+  carBokunId: string;
 }
 const filter = {
   priceMin: null,
