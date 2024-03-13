@@ -29,8 +29,8 @@ export const GET_TAGS_QUERY = gql`
 //DESTINATIONS
 
 export const GET_DESTINATIONS_QUERY = gql`
-  query GetDestinations {
-    getDestinations {
+  query GetDestinations($isTourActive: Boolean) {
+    getDestinations(isTourActive: $isTourActive) {
       id
       destinationName
       description
@@ -630,8 +630,8 @@ export const GET_CONTENT_QUERY = gql`
 `;
 
 export const GET_COUNTRIES_CONTINENTS_QUERY = gql`
-  query GetCountriesAndContinents {
-    getCountriesAndContinents {
+  query getCountriesAndContinentsForCMS {
+    getCountriesAndContinentsForCMS {
       country
       continent
       destinationCount

@@ -62,7 +62,11 @@ const CreateCar = () => {
     loading: destinationsLoading,
     error: destinationsError,
     data: destinationsData,
-  } = useQuery(GET_DESTINATIONS_QUERY);
+  } = useQuery(GET_DESTINATIONS_QUERY, {
+    variables: {
+      isTourActive: true, // Your variable value here
+    },
+  });
   //TAGS
   const {
     loading: tagsLoading,

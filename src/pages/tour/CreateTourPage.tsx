@@ -37,35 +37,36 @@ const CreateTourPage = () => {
   const defaultImg =
     "https://firebasestorage.googleapis.com/v0/b/marketingform-d32c3.appspot.com/o/bannerImages%2Fbackground.png?alt=media&token=4c357a20-703d-41df-a5e0-b1f1a585a4a1";
   const [tourImage, setTourImage] = useState("");
-  const [createTour, {  loading, error }] = useMutation(
-    CREATE_TOUR_MUTATION,
-    {
-      update(cache, { data: { createTour } }) {
-        // Retrieve the current tour list from the cache
-        const existingTours = cache.readQuery<GetToursQueryResponse>({
-          query: GET_TOURS_QUERY,
-        });
+  const [createTour, { loading, error }] = useMutation(CREATE_TOUR_MUTATION, {
+    update(cache, { data: { createTour } }) {
+      // Retrieve the current tour list from the cache
+      const existingTours = cache.readQuery<GetToursQueryResponse>({
+        query: GET_TOURS_QUERY,
+      });
 
-        // Add the new tour to the list
-        const newTours = existingTours
-          ? [...existingTours.getTours, createTour]
-          : [createTour];
+      // Add the new tour to the list
+      const newTours = existingTours
+        ? [...existingTours.getTours, createTour]
+        : [createTour];
 
-        // Write the updated list back to the cache
-        cache.writeQuery({
-          query: GET_TOURS_QUERY,
-          data: { getTours: newTours },
-        });
-      },
-    }
-  );
+      // Write the updated list back to the cache
+      cache.writeQuery({
+        query: GET_TOURS_QUERY,
+        data: { getTours: newTours },
+      });
+    },
+  });
 
   //Destinations
   const {
     loading: destinationsLoading,
     error: destinationsError,
     data: destinationsData,
-  } = useQuery(GET_DESTINATIONS_QUERY);
+  } = useQuery(GET_DESTINATIONS_QUERY, {
+    variables: {
+      isTourActive: true, // Your variable value here
+    },
+  });
   //TAGS
   const {
     loading: tagsLoading,
