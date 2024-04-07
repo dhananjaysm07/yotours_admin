@@ -22,6 +22,8 @@ export interface Car {
   active: boolean;
   priority: number;
   carBokunId: string;
+  price: string;
+  currency: string;
 }
 const filter = {
   priceMin: null,

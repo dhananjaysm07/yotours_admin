@@ -540,6 +540,8 @@ export const GET_CARS_QUERY = gql`
         active
         name
       }
+      price
+      currency
     }
   }
 `;
@@ -568,6 +570,8 @@ export const GET_FILTERED_CARS = gql`
           id
         }
         priority
+        price
+        currency
         tag {
           id
           name
@@ -598,6 +602,8 @@ export const GET_SINGLE_CAR = gql`
         id
       }
       priority
+      price
+      currency
       tag {
         id
         name

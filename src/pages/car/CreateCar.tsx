@@ -35,6 +35,8 @@ const CreateCar = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [carBokunId, setCarBokunId] = useState("");
+  const [price, setPrice] = useState("");
+  const [currency, setCurrency] = useState("USD");
   const navigate = useNavigate();
 
   const [createCar, { loading, error }] = useMutation(CREATE_CAR_MUTATION, {
@@ -90,6 +92,8 @@ const CreateCar = () => {
             tagId: tagId, // This is the tag ID selected from the dropdown
             priority,
             carBokunId,
+            price: price,
+            currency: currency,
             // active: true,
           },
         },
@@ -239,6 +243,46 @@ const CreateCar = () => {
             {tagsError && (
               <p className="text-xs italic text-red-500">{tagsError.message}</p>
             )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="currency"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Currency
+            </label>
+            <select
+              id="currency"
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              onChange={(e) => setCurrency(e.target.value)} // Assuming you have a state setter function for currency
+            >
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+              <option value="JPY">JPY</option>
+              <option value="AUD">AUD</option>
+              <option value="CAD">CAD</option>
+              <option value="CHF">CHF</option>
+              <option value="CNY">CNY</option>
+              <option value="SEK">SEK</option>
+              <option value="NZD">NZD</option>
+              // Add more currencies as needed
+            </select>
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="attractionTitle"
+              className="block mb-2 text-sm font-bold text-gray-700"
+            >
+              Price
+            </label>
+            <input
+              type="text"
+              id="destinationDescription"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            />
           </div>
           <div className="mb-4">
             <label
