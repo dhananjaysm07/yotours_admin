@@ -5,7 +5,7 @@ export type CheckboxInfo = {
   localTransfers: boolean;
 };
 
-const TransferComponent: React.FC = ({}) => {
+const TransferComponent: React.FC = () => {
   const { location, setLocation } = useGlobalStore();
   const { transfers } = location;
   const handleCheckboxChange = (

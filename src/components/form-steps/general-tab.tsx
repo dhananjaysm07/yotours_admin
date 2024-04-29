@@ -1,4 +1,3 @@
-import { useMutation } from "@apollo/client";
 import {
   DatesData,
   Highlight,
@@ -10,18 +9,20 @@ import BasicDetailsSection from "../general/basic-details-section";
 import DatesDetailsSection from "../general/dates-details-section";
 import DurationDetailsSection from "../general/duration-details-section";
 import SummaryDetailsSection from "../general/summary-details-section";
-import {
-  CREATE_PACKAGE_MUTATION,
-  UPDATE_PACKAGE_MUTATION,
-} from "../../graphql/mutations";
 import Loader from "../common/Loader";
-import { useState } from "react";
+import React, { useState } from "react";
 import { ErrorModal } from "../common/ErrorModal";
+import { useMutation } from "@apollo/client";
+import {
+  CREATE_GENERAL_PACKAGE_MUTATION,
+  CREATE_PACKAGE_MUTATION,
+  UPDATE_GENERAL_PACKAGE_MUTATION,
+} from "../../graphql/mutations";
 
 interface CreatePackageGeneralInput {
   title: string;
   type: string;
-  destinationIds: string[];
+  destinations: Array<{ id: string; name: string }>;
   dates?: DatesData[];
   summary: string;
   highlights: Highlight[];
@@ -29,126 +30,65 @@ interface CreatePackageGeneralInput {
   exclusion: string[];
   inclusion: string[];
   id: string;
-  // createdAt: Date;
-  // updatedAt: Date;
   currentStep: number;
 }
-interface DateDetailsInput {
-  bookingFromDate: string;
-  bookingToDate: String;
-  travenDates: {
-    fromDate: string;
-    toDate: string;
-  }[];
-}
 
-interface HighlightInput {
-  title: string;
-  description: string;
-  url: string;
-}
-interface PhotoInput {
-  url: string;
-}
-
-type CreatePackageGeneralResponse = {
-  createPackageGeneral: {
-    id: string;
-  };
-};
-type UpdatePackageGeneralResponse = {
-  updatePackageGeneral: {
-    id: string;
-  };
-};
 const GeneralFormTab = () => {
   const { activeStep, setActiveStep, general, packageId, setPackageId } =
     useGlobalStore();
   const [isErrorModalOpen, setErrorModalOpen] = useState(false);
 
   const { basicData, datesData, durationData, summaryData } = general;
-  const [createPackageGeneral, { data, loading, error }] =
-    useMutation<CreatePackageGeneralResponse>(CREATE_PACKAGE_MUTATION);
-  const [
-    updatePackageGeneral,
-    { data: updateData, loading: updateLoading, error: updateError },
-  ] = useMutation<UpdatePackageGeneralResponse>(UPDATE_PACKAGE_MUTATION);
 
-  // const transformDatesDataToInput = (data: DatesData): DateDetailsInput => {
-  //   return {
-  //     bookingFromDate: data.bookingDates,
-  //     bookingToDate: data.bookingDates.to,
-  //     travenDates: data.travelDates.map((date) => ({
-  //       fromDate: date.from,
-  //       toDate: date.to,
-  //     })),
-  //   };
-  // };
-  const handleSubmit = async () => {
-    console.log("handle submit", {
-      productTitle: basicData.title,
-      productType: basicData.type,
-      destinationIds: basicData.destinations,
-      dates: datesData,
-      summary: summaryData.summary,
-      inclusion: summaryData.inclusions,
-      exclusion: summaryData.exclusions,
-      highlights: summaryData.highlights,
-      photos: summaryData.photos,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+  const loading = false;
+  const [
+    createPackage,
+    { data: createData, loading: loadingCreate, error: errorCreate },
+  ] = useMutation(CREATE_GENERAL_PACKAGE_MUTATION);
+  const [
+    updatePackage,
+    { data: updateData, loading: loadingUpdate, error: errorUpdate },
+  ] = useMutation(UPDATE_GENERAL_PACKAGE_MUTATION);
+  const handleCreatePackage = (data: any) => {
+    createPackage({ variables: { input: data } });
+  };
+  const handleUpdatePackage = (data: any) => {
+    updatePackage({
+      variables: { updateGeneralDetailId: packageId, input: data },
     });
+  };
+  React.useEffect(() => {
+    // console.log("create data top level", createData);
+    if (createData?.createPackage && !packageId) {
+      setPackageId(createData?.createPackage?.id);
+      setActiveStep(activeStep + 1);
+    }
+  }, [createData]);
+
+  React.useEffect(() => {
+    // console.log("update data top level", updateData);
+    if (updateData?.updateGeneralDetail?.id) {
+      setActiveStep(activeStep + 1);
+    }
+  }, [updateData]);
+
+  const handleSubmit = async () => {
     try {
-      const createPackageGeneralInput: CreatePackageGeneralInput = {
+      const createPackageGeneralInput = {
         title: basicData.title,
         type: basicData.type,
-        destinationIds: basicData.destinations,
-        dates: datesData,
-        summary: summaryData.summary,
-        highlights: summaryData.highlights,
-        photos: summaryData.photos,
-        inclusion: summaryData.inclusions,
-        exclusion: summaryData.exclusions,
-        id: packageId || "",
-        // createdAt: new Date(),
-        // updatedAt: new Date(),
-        currentStep: 0,
-        //... other fields
+        destinationIds: basicData.destinations.map((el) => el.id),
+        datesData,
+        durationData,
+        summaryData,
       };
-
-      // if (packageId) {
-      //   // Call your update API here
-      //   const updateResponse = await updatePackageGeneral({
-      //     variables: {
-      //       updatePackageGeneralInput: createPackageGeneralInput,
-      //       id: packageId,
-      //     },
-      //   });
-
-      //   if (updateError) {
-      //     console.error("Failed to update package:", updateError);
-      //     setErrorModalOpen(true);
-      //     return; // Do not proceed if there's an error
-      //   }
-
-      //   console.log("Package updated:", updateResponse.data);
-      // }
-      // else {
       console.log("create package.....", createPackageGeneralInput);
-      const response = await createPackageGeneral({
-        variables: { createPackageGeneralInput: createPackageGeneralInput },
-      });
-      if (error) {
-        console.error("Failed to create package:", error);
-        setErrorModalOpen(true);
-        return; // Do not proceed if there's an error
+      if (packageId) {
+        handleUpdatePackage(createPackageGeneralInput);
+      } else {
+        handleCreatePackage(createPackageGeneralInput);
       }
-
-      console.log("Package created:", response.data);
-      setPackageId(response.data!.createPackageGeneral.id);
-      // }
-
-      setActiveStep(activeStep + 1); // Increase the active step upon success
+      // Increase the active step upon success
     } catch (error) {
       console.error("Runtime error occurred:", error);
       setErrorModalOpen(true); // Open the error modal for runtime errors
@@ -159,7 +99,7 @@ const GeneralFormTab = () => {
     <>
       <div className="flex flex-col gap-9">
         {/* <!-- Contact Form --> */}
-        <div className="bg-white border rounded-sm border-stroke dark:border-strokedark dark:bg-boxdark">
+        <form className="bg-white border rounded-sm border-stroke dark:border-strokedark dark:bg-boxdark">
           <div className="border-b bg-primary border-stroke py-4 px-6.5 dark:border-strokedark">
             <h3 className="font-semibold text-white ">General Details</h3>
           </div>
@@ -189,16 +129,23 @@ const GeneralFormTab = () => {
                 )}
                 {activeStep < steps.length - 1 && (
                   <button
+                    type="submit"
                     onClick={handleSubmit}
+                    disabled={loadingCreate || loadingUpdate}
                     className="flex justify-center px-4 py-2 font-medium text-white rounded-lg bg-primary"
                   >
-                    Next
+                    Submit & Next
                   </button>
                 )}
+                <p>
+                  {(errorCreate || errorUpdate)?.message
+                    ? errorCreate?.message || errorUpdate?.message
+                    : ""}
+                </p>
               </div>
             </>
           )}
-        </div>
+        </form>
       </div>
     </>
   );

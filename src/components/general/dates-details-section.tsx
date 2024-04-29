@@ -71,8 +71,8 @@ const DatesDetailsSection = () => {
   const handleAddDate = () => {
     console.log("Adding new Date");
     const newDateEntry = {
-      bookingDates: { from: "", to: "" },
-      travelDates: [{ from: "", to: "" }],
+      // bookingDates: { from: "", to: "" },
+      travelDates: [],
     };
 
     setGeneral("datesData", [...datesData, newDateEntry]);

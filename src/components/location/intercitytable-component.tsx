@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useGlobalStore } from "../../store/globalStore";
-import EditHotelModal from "./edithotel-modal";
+// import EditHotelModal from "./edithotel-modal";
 import EditIntercityModal from "./editIntercity-model";
 
 const IntercityTableComponent = () => {
@@ -60,9 +60,11 @@ const IntercityTableComponent = () => {
                         className="relative flex w-5 h-5 bg-white peer-checked:bg-indigo-600 rounded-md border ring-offset-2 ring-indigo-600 duration-150 peer-active:ring cursor-pointer after:absolute after:inset-x-0 after:top-[3px] after:m-auto after:w-1.5 after:h-2.5 after:border-r-2 after:border-b-2 after:border-white after:rotate-45"
                       ></label>
                     </div> */}
-                  {item.fromCity}
+                  {item.fromCity.name}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.toCity}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {item.toCity.name}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap">{item.mode}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {item.description}

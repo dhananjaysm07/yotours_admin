@@ -16,7 +16,7 @@ const HighlightsComponent: React.FC = () => {
   const { summaryData } = general;
   const [previewImage, setPreviewImage] = useState<string | null>();
   const [imageViewModalOpen, setImageViewModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
+  // const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
 
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -175,7 +175,9 @@ const HighlightsComponent: React.FC = () => {
           </div>
         ) : (
           <div className="flex items-center justify-center">
-            <h2 className="text-xl italic font-satoshi">Click on Add highlight to start adding highlights</h2>
+            <h2 className="text-xl italic font-satoshi">
+              Click on Add highlight to start adding highlights
+            </h2>
           </div>
         )}
         {imageViewModalOpen && (

@@ -16,21 +16,21 @@ const EditIntercityModal: React.FC<EditIntercityModalProps> = ({
   const { general, location, setLocation } = store;
   const { intercityData } = location;
 
-  const cityOptions = general.basicData.cities.map((city) => ({
-    label: city,
-    value: city,
+  const cityOptions = general.basicData.destinations.map((city) => ({
+    label: city.name,
+    value: city.id,
   }));
 
   const handleFromCity = (selectedCities: OptionType[]) => {
     setIntercityFormData((prev) => ({
       ...prev,
-      fromCity: selectedCities[0].value,
+      fromCity: { id: selectedCities[0].value, name: selectedCities[0].label },
     }));
   };
   const handleToCity = (selectedCities: OptionType[]) => {
     setIntercityFormData((prev) => ({
       ...prev,
-      toCity: selectedCities[0].value,
+      toCity: { id: selectedCities[0].value, name: selectedCities[0].label },
     }));
   };
   const handleSave = () => {
@@ -72,8 +72,8 @@ const EditIntercityModal: React.FC<EditIntercityModalProps> = ({
             onSelect={handleFromCity}
             value={[
               {
-                value: intercityFormData.fromCity,
-                label: intercityFormData.fromCity,
+                value: intercityFormData.fromCity.id,
+                label: intercityFormData.fromCity.name,
               },
             ]}
             requiredField={false}
@@ -89,8 +89,8 @@ const EditIntercityModal: React.FC<EditIntercityModalProps> = ({
             onSelect={handleToCity}
             value={[
               {
-                value: intercityFormData.fromCity,
-                label: intercityFormData.fromCity,
+                value: intercityFormData.fromCity.id,
+                label: intercityFormData.fromCity.name,
               },
             ]}
             requiredField={false}

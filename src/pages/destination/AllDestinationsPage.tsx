@@ -2,10 +2,9 @@
 
 import React from "react";
 import { Destination } from "../../components/destination/destination-card";
-import { useDataStore, useDestinationPaginationStore } from "../../store/store";
+import { useDestinationPaginationStore } from "../../store/store";
 import { useNavigate } from "react-router";
 import { useData } from "../../context/DataContext";
-import { SelectChangeEvent } from "@mui/material";
 import { filterType } from "../../utils/types";
 
 const AllDestinationsPage: React.FC = () => {

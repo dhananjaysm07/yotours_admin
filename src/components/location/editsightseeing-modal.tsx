@@ -15,9 +15,9 @@ const EditSightseeingModal: React.FC<EditSightseeingModalProps> = ({
   const store = useGlobalStore();
   const { general, location, setLocation } = store;
   const { sightseeingData } = location;
-  const cityOptions = general.basicData.cities.map((city) => ({
-    label: city,
-    value: city,
+  const cityOptions = general.basicData.destinations.map((city) => ({
+    label: city.name,
+    value: city.id,
   }));
 
   const handleSave = () => {
@@ -42,16 +42,24 @@ const EditSightseeingModal: React.FC<EditSightseeingModalProps> = ({
             requiredField={false}
             placeholder="Select cities"
             options={cityOptions}
-            value={[{ value: sightsFormData.city, label: sightsFormData.city }]}
+            value={[
+              {
+                value: sightsFormData.city.id,
+                label: sightsFormData.city.name,
+              },
+            ]}
             onSelect={(selectedCity) => {
               setSightsFormData((prev) => ({
                 ...prev,
-                city: selectedCity[0].value,
+                city: {
+                  id: selectedCity[0].value,
+                  name: selectedCity[0].label,
+                },
               }));
             }}
           />
         </div>
-        {sightsFormData.city !== "" && (
+        {sightsFormData.city.name !== "" && (
           <div className="w-full mb-4 ">
             <DynamicInputList
               initialItemList={sightsFormData.sights}

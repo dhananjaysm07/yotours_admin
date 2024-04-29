@@ -4,30 +4,38 @@ import CustomFloatingInput from "../common/CustomFloatingInput";
 import CustomSelect, { OptionType } from "../common/CustomSelect";
 import { HotelData, useGlobalStore } from "../../store/globalStore";
 interface EditHotelModalProps {
-  hotel: HotelData;
+  hotelIndex: number;
   setModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const EditHotelModal: React.FC<EditHotelModalProps> = ({ hotel, setModal }) => {
+const EditHotelModal: React.FC<EditHotelModalProps> = ({
+  hotelIndex,
+  setModal,
+}) => {
   const store = useGlobalStore();
   const [sameForAll, setSameForAll] = useState<boolean>(false);
-  const [hotelFormData, setHotelFormData] = useState<HotelData>(hotel);
+
   const { general, location, setLocation } = store;
   const { hotelsData } = location;
-
-  const cityOptions = general.basicData.cities.map((city) => ({
-    label: city,
-    value: city,
+  const [hotelFormData, setHotelFormData] = useState<HotelData>(
+    hotelsData[hotelIndex]
+  );
+  const cityOptions = general.basicData.destinations.map((city) => ({
+    label: city.name,
+    value: city.id,
   }));
 
   const handleCitySelection = (selectedCities: OptionType[]) => {
     setHotelFormData((prev) => ({
       ...prev,
-      cities: selectedCities.map((cityOption) => cityOption.value),
+      cities: selectedCities.map((cityOption) => ({
+        id: cityOption.value,
+        name: cityOption.label,
+      })),
     }));
   };
   const handleSave = () => {
-    const updatedHotelData = hotelsData.map((item) => {
-      if (item.name === hotel.name) {
+    const updatedHotelData = hotelsData.map((hotel, index) => {
+      if (index === hotelIndex) {
         // Assuming hotelId is the unique identifier of the hotel being edited
         return hotelFormData;
       }
@@ -55,8 +63,8 @@ const EditHotelModal: React.FC<EditHotelModalProps> = ({ hotel, setModal }) => {
             onSelect={handleCitySelection}
             value={
               hotelFormData.cities?.map((city) => ({
-                label: city,
-                value: city,
+                label: city.name,
+                value: city.id,
               })) ?? []
             }
             requiredField={false}
@@ -64,10 +72,7 @@ const EditHotelModal: React.FC<EditHotelModalProps> = ({ hotel, setModal }) => {
           />
         </div>
         <div className="w-full mb-4 ">
-          <label
-           
-            className="block text-black dark:text-white"
-          >
+          <label className="block text-black dark:text-white">
             Hotel Name:
           </label>
           <input
@@ -83,9 +88,7 @@ const EditHotelModal: React.FC<EditHotelModalProps> = ({ hotel, setModal }) => {
         </div>
 
         <div className="w-full mb-4 ">
-          <label  className="font-medium">
-            Rating:
-          </label>
+          <label className="font-medium">Rating:</label>
           <CustomSelect
             isMulti={false}
             requiredField={false}

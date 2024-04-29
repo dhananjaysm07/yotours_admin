@@ -2,8 +2,7 @@ import { create } from "zustand";
 export type BasicData = {
   title: string;
   type: string;
-  destinations: string[];
-  cities: string[];
+  destinations: Array<{ id: string; name: string }>;
   preferences: string[];
   themes: string[];
 };
@@ -37,7 +36,7 @@ export type Photo = {
   url: string;
 };
 export type HotelData = {
-  cities: string[];
+  cities: Array<{ name: string; id: string }>;
   meals: string[];
   rating: string;
   name: string;
@@ -45,19 +44,19 @@ export type HotelData = {
   nights: number;
 };
 export type IntercityData = {
-  fromCity: string;
-  toCity: string;
+  fromCity: { name: string; id: string };
+  toCity: { name: string; id: string };
   mode: string;
   description: string;
 };
 export type SightSeeingData = {
-  city: string;
+  city: { name: string; id: string };
   sights: string[];
 };
 export type DayWiseItinerary = {
   day: number;
   description: string;
-  cities: string[];
+  cities: Array<{ name: string; id: string }>;
   meals: string[];
   inclusions: string[];
   exclusions: string[];

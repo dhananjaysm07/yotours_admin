@@ -8,6 +8,10 @@ import PricingFormTab from "../../components/form-steps/pricing-tab";
 import LanguageFormTab from "../../components/form-steps/language-tab";
 import PolicyFormTab from "../../components/form-steps/policy-tab";
 import { steps } from "../../utils/steps";
+import React from "react";
+// import { useQuery } from "react-query";
+import { GET_COMPLETE_PACKAGE_DETAIL } from "../../graphql/packageQuery";
+import { useQuery } from "@apollo/client";
 
 function getStepContent(stepIndex: number) {
   switch (stepIndex) {
@@ -34,9 +38,85 @@ const CreatePackagePage = () => {
     location,
     pricing,
     cancellationPolicy,
-    setActiveStep,
     itinerary,
+    setPackageId,
+    packageId,
+    setGeneral,
+    setLanguages,
+    setLocation,
+    setCancellationPolicy,
+    // setPricing,
+    setItinerary,
+    setPricing,
   } = useGlobalStore();
+  const { refetch } = useQuery(GET_COMPLETE_PACKAGE_DETAIL, {
+    variables: {
+      getHolidayId: packageId,
+    },
+    skip: true,
+  });
+  React.useEffect(() => {
+    // handleRefetchData();
+    setPackageId("");
+  }, []);
+  const handleRefetchData = async () => {
+    const { data } = await refetch({
+      getHolidayId: packageId,
+    });
+    // console.log("data-------------------------------", data);
+    const { getHoliday } = data || {};
+    // console.log("getHoliday", getHoliday);
+    if (getHoliday) {
+      setGeneral("basicData", {
+        destinations: getHoliday.destinations?.map(
+          (destination: { destinationName: string; id: string }) => ({
+            name: destination?.destinationName,
+            id: destination?.id,
+          })
+        ),
+        title: getHoliday.title || "",
+        type: getHoliday.type || "",
+        themes: getHoliday.themes || [],
+        preferences: getHoliday.preferences || [],
+      });
+      setGeneral("durationData", {
+        ...getHoliday.durationData,
+      });
+      setGeneral("datesData", [...getHoliday.datesData]);
+      setGeneral("summaryData", {
+        inclusions: getHoliday.summaryData?.inclusions || [],
+        exclusions: getHoliday.summaryData?.exclusions || [],
+        highlights: getHoliday.summaryData?.highlights || [],
+        photos: getHoliday?.summaryData?.photos || [],
+        summary: getHoliday?.summaryData?.summary || "",
+      });
+      setItinerary("daywiseItinerary", getHoliday?.daywiseItinerary || []);
+      setLocation("hotelsData", getHoliday?.locationData?.hotels || []);
+      setLocation(
+        "intercityData",
+        getHoliday?.locationData?.intercityData || []
+      );
+      setLocation("sightseeingData", getHoliday?.locationData?.sightData || []);
+      setLocation("transfers", {
+        localTransfers:
+          getHoliday?.locationData?.transfers?.localTransfers || false,
+        airportTransfers:
+          getHoliday?.locationData?.transfers?.airportTransfers || false,
+      });
+      setPricing("adultPrice", getHoliday?.pricingData?.adultPrice || 0);
+      setPricing("childPrice", getHoliday?.pricingData?.childPrice || 0);
+      setPricing("currency", getHoliday?.pricingData?.currency || "");
+      setPricing("type", getHoliday?.pricingData?.type || "");
+      setPricing("maxMembers", getHoliday?.pricingData?.maxMembers || 0);
+      setLanguages(getHoliday?.languages);
+      setCancellationPolicy({ ...getHoliday?.cancellationPolicy });
+    }
+  };
+  React.useEffect(() => {
+    if (packageId) {
+      handleRefetchData();
+    }
+  }, [packageId]);
   const handleSubmit = async () => {
     const fullData = {
       general,
@@ -75,14 +155,9 @@ const CreatePackagePage = () => {
       {/* <Breadcrumb pageName="Create Holiday Package" />
        */}
       <StepProgressBar steps={steps} />
-      <form
-        id="mainForm"
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
-      >
+      <div id="mainForm">
         <ErrorBoundary>{getStepContent(activeStep)}</ErrorBoundary>
-        <div className="flex justify-end p-4 mt-1 space-x-2 bg-white">
+        {/* <div className="flex justify-end p-4 mt-1 space-x-2 bg-white">
           {activeStep == steps.length - 1 && (
             <button
               type="button"
@@ -92,8 +167,8 @@ const CreatePackagePage = () => {
               Submit
             </button>
           )}
-        </div>
-      </form>
+        </div> */}
+      </div>
       {/* Consider adding a submit button when on the last step */}
     </div>
   );

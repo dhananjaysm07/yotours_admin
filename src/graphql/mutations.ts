@@ -335,3 +335,77 @@ export const UPDATE_CONTENT_MUTATION = gql`
     }
   }
 `;
+
+export const CREATE_GENERAL_PACKAGE_MUTATION = gql`
+  mutation CreatePackage($input: UpdateGeneralDetailInput!) {
+    createPackage(input: $input) {
+      id
+    }
+  }
+`;
+
+export const UPDATE_GENERAL_PACKAGE_MUTATION = gql`
+  mutation UpdateGeneralDetail(
+    $updateGeneralDetailId: String!
+    $input: UpdateGeneralDetailInput!
+  ) {
+    updateGeneralDetail(id: $updateGeneralDetailId, input: $input) {
+      id
+    }
+  }
+`;
+
+export const UPDATE_ITINERARY_MUTATION = gql`
+  mutation UpdateItinerary(
+    $updateItineraryId: String!
+    $input: UpdateItineraryInput!
+  ) {
+    updateItinerary(id: $updateItineraryId, input: $input) {
+      id
+    }
+  }
+`;
+
+export const UPDATE_LOCATION_DATA_MUTATION = gql`
+  mutation UpdateLocation(
+    $updateLocationId: String!
+    $input: UpdateLocationInput!
+  ) {
+    updateLocation(id: $updateLocationId, input: $input) {
+      id
+    }
+  }
+`;
+
+export const UPDATE_PRICING_MUTATION = gql`
+  mutation UpdatePricing(
+    $updatePricingId: String!
+    $input: UpdatePricingInput!
+  ) {
+    updatePricing(id: $updatePricingId, input: $input) {
+      id
+    }
+  }
+`;
+
+export const UPDATE_LANGUAGE_MUTATION = gql`
+  mutation UpdateLanguages(
+    $updateLanguagesId: String!
+    $input: UpdateLanguagesInput!
+  ) {
+    updateLanguages(id: $updateLanguagesId, input: $input) {
+      id
+    }
+  }
+`;
+
+export const UPDATE_CANCELLATION_PACKAGE_MUTATION = gql`
+  mutation UpdateCancellationPolicy(
+    $updateCancellationPolicyId: String!
+    $input: UpdateCancellationPolicyInput!
+  ) {
+    updateCancellationPolicy(id: $updateCancellationPolicyId, input: $input) {
+      id
+    }
+  }
+`;

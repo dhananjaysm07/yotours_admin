@@ -110,7 +110,11 @@ export const DataProvider = ({ children }: Props) => {
     loading: destinationListLoading,
     error: destinationListError,
     data: destinationListData,
-  }: QueryResult = useQuery(GET_DESTINATIONS_LIST_QUERY);
+  }: QueryResult = useQuery(GET_DESTINATIONS_LIST_QUERY, {
+    variables: {
+      isTourActive: true,
+    },
+  });
   // const {
   //   loading: tourListLoading,
   //   error: tourListError,

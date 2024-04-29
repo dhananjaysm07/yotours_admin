@@ -27,7 +27,7 @@ const SightseeingTableComponent = () => {
         <tbody>
           {sightseeingData.map((item, index) => (
             <tr key={index} className="text-center">
-              <td className="px-4 py-2 border">{item.city}</td>
+              <td className="px-4 py-2 border">{item.city.name}</td>
               <td className="px-4 py-2 border">{item.sights.join(", ")}</td>
               <td className="px-6 text-right border whitespace-nowrap">
                 <button

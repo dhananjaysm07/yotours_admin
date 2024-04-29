@@ -57,8 +57,8 @@ export const GET_DESTINATIONS_QUERY = gql`
   }
 `;
 export const GET_DESTINATIONS_LIST_QUERY = gql`
-  query GetDestinations {
-    getDestinations {
+  query GetDestinations($isTourActive: Boolean) {
+    getDestinations(isTourActive: $isTourActive) {
       id
       destinationName
       description

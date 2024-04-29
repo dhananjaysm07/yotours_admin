@@ -1,38 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState } from "react";
 import CustomSelect, { OptionType } from "../common/CustomSelect";
 import { useGlobalStore } from "../../store/globalStore";
 import { useData } from "../../context/DataContext";
-// interface BasicDetailsSectionProps {
-//   basicData: BasicData;
-// }
-
-type City = string;
-
-interface Destination {
-  name: string;
-  cities: City[];
-}
-
-// interface JsonData {
-//   destinations: Destination[];
-// }
-
-// const jsonData: JsonData = {
-//   destinations: [
-//     {
-//       name: "USA",
-//       cities: ["New York", "Los Angeles", "Chicago"],
-//     },
-//     {
-//       name: "69790710-08f4-4ffb-9c72-0759af333f8d",
-//       cities: ["9acbc8f6-1ae5-4b2a-82b2-a820d0f6eab2", "Delhi", "Bangalore"],
-//     },
-//     {
-//       name: "Australia",
-//       cities: ["Sydney", "Melbourne", "Brisbane"],
-//     },
-//   ],
-// };
 
 const BasicDetailsSection: React.FC = () => {
   const { general, setGeneral, errors } = useGlobalStore();
@@ -52,6 +21,7 @@ const BasicDetailsSection: React.FC = () => {
       );
     }
   }, [destinationListData]);
+  console.log("destination list data", destinationListData?.getDestinations);
   // const [cityOptions, setCityOptions] = useState<
   //   { value: City; label: City }[]
   // >([]);
@@ -59,9 +29,10 @@ const BasicDetailsSection: React.FC = () => {
     // Update your global state or local state as needed
     // For instance, update the destinations in the global state:
     // findCityOptions(selectedDestinations);
-    const destinationValues = selectedDestinations.map(
-      (option) => option.value
-    );
+    const destinationValues = selectedDestinations.map((option) => ({
+      name: option.label,
+      id: option.value,
+    }));
     setGeneral("basicData", {
       destinations: destinationValues,
     });
@@ -166,8 +137,8 @@ const BasicDetailsSection: React.FC = () => {
               options={destinationOptions}
               onSelect={handleDestinationChange}
               value={basicData.destinations.map((dest) => ({
-                value: dest,
-                label: dest,
+                value: dest.id,
+                label: dest.name,
               }))}
             />
           </div>

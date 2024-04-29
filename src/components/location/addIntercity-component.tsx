@@ -7,47 +7,54 @@ const IntercityComponent: React.FC = () => {
   const [sameForAll, setSameForAll] = useState<boolean>(false);
   const [intercityFormData, setIntercityFormData] = useState<IntercityData>({
     description: "",
-    fromCity: "",
+    fromCity: { name: "", id: "" },
     mode: "",
-    toCity: "",
+    toCity: { name: "", id: "" },
   });
   const { general, location, setLocation } = store;
   const { intercityData } = location;
 
-  const cityOptions = general.basicData.cities.map((city) => ({
-    label: city,
-    value: city,
+  const cityOptions = general.basicData.destinations.map((city) => ({
+    label: city.name,
+    value: city.id,
   }));
 
   const handleFromCity = (selectedCities: OptionType[]) => {
-    const cityValue = selectedCities.length > 0 ? selectedCities[0].value : "";
+    console.log("selected city", selectedCities);
+    const cityValue =
+      selectedCities.length > 0
+        ? { id: selectedCities[0].value, name: selectedCities[0].label }
+        : { id: "", name: "" };
     setIntercityFormData((prev) => ({
       ...prev,
-      fromCity: cityValue,
+      fromCity: { name: cityValue.name, id: cityValue.id },
     }));
   };
   const handleToCity = (selectedCities: OptionType[]) => {
-    const cityValue = selectedCities.length > 0 ? selectedCities[0].value : "";
+    const cityValue =
+      selectedCities.length > 0
+        ? { id: selectedCities[0].value, name: selectedCities[0].label }
+        : { id: "", name: "" };
     setIntercityFormData((prev) => ({
       ...prev,
-      toCity: cityValue,
+      toCity: { name: cityValue.name, id: cityValue.id },
     }));
   };
   const handleSave = () => {
-    let updatedIntercityData = [...intercityData, intercityFormData];
+    const updatedIntercityData = [...intercityData, intercityFormData];
 
     setLocation("intercityData", updatedIntercityData);
     setIntercityFormData({
       description: "",
-      fromCity: "",
+      fromCity: { name: "", id: "" },
       mode: "",
-      toCity: "",
+      toCity: { name: "", id: "" },
     });
   };
 
   return (
     <div className="p-6.5 border shadow-sm border-gray">
-      <div className="flex items-center mb-4">
+      <div className="flex items-center mb-4 hidden">
         <input
           type="checkbox"
           className="w-6 h-6"
@@ -62,13 +69,13 @@ const IntercityComponent: React.FC = () => {
       <div className="w-full mb-3 sm:w-1/2">
         <label className="block text-black dark:text-white">From City:</label>
         <CustomSelect
-          isMulti={true}
+          isMulti={false}
           options={cityOptions}
           onSelect={(selected) => handleFromCity(selected)}
           value={[
             {
-              value: intercityFormData.fromCity ?? "",
-              label: intercityFormData.fromCity ?? "",
+              value: intercityFormData.fromCity.id ?? "",
+              label: intercityFormData.fromCity.name ?? "",
             },
           ]}
           requiredField={intercityData.length > 0 ? false : true}
@@ -78,13 +85,13 @@ const IntercityComponent: React.FC = () => {
       <div className="w-full mb-3 sm:w-1/2">
         <label className="block text-black dark:text-white">To City:</label>
         <CustomSelect
-          isMulti={true}
+          isMulti={false}
           options={cityOptions}
           onSelect={handleToCity}
           value={[
             {
-              value: intercityFormData.toCity,
-              label: intercityFormData.toCity,
+              value: intercityFormData.toCity.id,
+              label: intercityFormData.toCity.name,
             },
           ]}
           requiredField={intercityData.length > 0 ? false : true}
@@ -119,9 +126,7 @@ const IntercityComponent: React.FC = () => {
         />
       </div>
       <div className="w-full mb-4 sm:w-1/2">
-        <label className="block text-black dark:text-white">
-          Description
-        </label>
+        <label className="block text-black dark:text-white">Description</label>
         <input
           type="text"
           id="modeDescription"

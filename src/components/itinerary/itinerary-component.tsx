@@ -13,15 +13,16 @@ const ItineraryComponent: React.FC<ItineraryComponentProps> = ({
   const { general, itinerary, setItinerary } = store;
   const { daywiseItinerary } = itinerary;
   const itineraryDaywiseData = daywiseItinerary[dayIndex];
-  const cityOptions = general.basicData.cities.map((city) => ({
-    label: city,
-    value: city,
+  console.log("general detail", general);
+  const cityOptions = general.basicData.destinations.map((city) => ({
+    label: city.name,
+    value: city.id,
   }));
 
   const handleCitySelection = (selectedCities: OptionType[]) => {
     const updatedItineraryData = [...daywiseItinerary];
     updatedItineraryData[dayIndex].cities = selectedCities.map(
-      (cityOption) => cityOption.value
+      (cityOption) => ({ id: cityOption.value, name: cityOption.label })
     );
 
     setItinerary("daywiseItinerary", updatedItineraryData);
@@ -31,7 +32,7 @@ const ItineraryComponent: React.FC<ItineraryComponentProps> = ({
     <div className="w-full mb-4 border shadow-sm border-gray xl:w-1/2 xl:mb-2">
       <div className="flex items-center px-3 py-2 border-b bg-graydark dark:bg-graydark border-stroke dark:border-strokedark">
         <label className="block text-white dark:text-white">
-          Day {dayIndex+1}
+          Day {dayIndex + 1}
         </label>
       </div>
       <div className="py-6 px-6.5">
@@ -45,8 +46,8 @@ const ItineraryComponent: React.FC<ItineraryComponentProps> = ({
             onSelect={handleCitySelection}
             value={
               itineraryDaywiseData.cities?.map((city) => ({
-                label: city,
-                value: city,
+                label: city.name,
+                value: city.id,
               })) ?? []
             }
           />
