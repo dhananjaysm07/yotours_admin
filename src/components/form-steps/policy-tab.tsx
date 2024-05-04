@@ -18,7 +18,15 @@ const PolicyFormTab = () => {
   );
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("cancellation", cancellationPolicy, "package", packageId);
+    console.log("cancellation", cancellationPolicy, "package", packageId, {
+      updateCancellationPolicyId: packageId,
+      input: {
+        cancellationPolicy: {
+          description: cancellationPolicy.description,
+          option: cancellationPolicy.option,
+        },
+      },
+    });
     updateCancellation({
       variables: {
         updateCancellationPolicyId: packageId,
@@ -33,8 +41,9 @@ const PolicyFormTab = () => {
     // setActiveStep(activeStep + 1);
   };
   const navigate = useNavigate();
+  console.log("response from api", data);
   React.useEffect(() => {
-    if (!loading && data?.updateLanguages) navigate("/");
+    if (!loading && data?.updateCancellationPolicy?.id) navigate("/");
   }, [loading]);
   return (
     <div className="flex flex-col gap-9">

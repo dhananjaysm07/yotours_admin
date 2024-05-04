@@ -2,6 +2,7 @@ import { useMutation } from "@apollo/client";
 import { DELETE_PACKAGE_MUTATION } from "../../../graphql/mutations";
 import { TourPackage } from "../../../utils/types";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 interface AllPackagesTableProps {
   tableItems: TourPackage[];
@@ -10,7 +11,7 @@ interface AllPackagesTableProps {
 const AllPackagesTable: React.FC<AllPackagesTableProps> = ({ tableItems }) => {
   const [packageItems, setPackageItems] = useState<TourPackage[]>(tableItems);
   const [deletePackageGeneral, { data }] = useMutation(DELETE_PACKAGE_MUTATION);
-
+  const navigate = useNavigate();
   const handleDelete = (id: string) => {
     try {
       console.log(`Starting deleting ${id}`);
@@ -51,19 +52,17 @@ const AllPackagesTable: React.FC<AllPackagesTableProps> = ({ tableItems }) => {
               <tr key={index}>
                 <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-10">
                   <h5 className="font-medium text-black dark:text-white">
-                    {item.productTitle}
+                    {item.title}
                   </h5>
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <p className="inline-flex px-3 py-1 text-sm font-medium rounded-full bg-success bg-opacity-10 text-success">
-                    {item.productType == ""
-                      ? "No product type"
-                      : item.productType}
+                    {item.type == "" ? "No product type" : item.type}
                   </p>
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <p className="text-black dark:text-white">
-                    {item.duration == "" ? "No Duration" : item.duration}
+                    {/* {item.duration == "" ? "No Duration" : item.duration} */}
                   </p>
                 </td>
 
@@ -71,7 +70,9 @@ const AllPackagesTable: React.FC<AllPackagesTableProps> = ({ tableItems }) => {
                   <div className="flex items-center space-x-3.5">
                     <button
                       className="hover:text-primary"
-                      // onClick={() => navigate(`/package/edit-package/${id}`)}
+                      onClick={() =>
+                        navigate(`/package/editPackage/${item.id}`)
+                      }
                     >
                       <svg
                         className="fill-current"
@@ -91,10 +92,9 @@ const AllPackagesTable: React.FC<AllPackagesTableProps> = ({ tableItems }) => {
                         />
                       </svg>
                     </button>
-                    <button
+                    {/* <button
                       className="hover:text-primary"
                       onClick={() => handleDelete(item.id)}
-
                     >
                       <svg
                         className="fill-current"
@@ -121,10 +121,8 @@ const AllPackagesTable: React.FC<AllPackagesTableProps> = ({ tableItems }) => {
                           fill=""
                         />
                       </svg>
-                    </button>
-                    <button
-                      className="hover:text-meta-3"
-                    >
+                    </button> */}
+                    <button className="hover:text-meta-3">
                       <svg
                         className="fill-current"
                         width="18"
