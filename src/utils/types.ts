@@ -1,7 +1,7 @@
 export interface TourPackage {
   id: string;
-  productTitle: string;
-  productType: string;
+  title: string;
+  type: string;
   duration?: string;
 }
 

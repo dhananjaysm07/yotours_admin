@@ -27,6 +27,7 @@ import ContentPage from "./pages/content/ContentPage";
 import CreateCar from "./pages/car/CreateCar";
 import AllCarsPage from "./pages/car/AllCar";
 import EditCarPage from "./pages/car/EditCar";
+import EditPackagePage from "./pages/package/EditPackage";
 
 function App() {
   //page refresh at any location is leading me to root page
@@ -57,6 +58,10 @@ function App() {
               element={<CreatePackagePage />}
             />
             <Route path="package/allpackages" element={<AllPackagesPage />} />
+            <Route
+              path="package/editPackage/:id"
+              element={<EditPackagePage />}
+            />
             <Route path="settings" element={<SettingPage />} />
             <Route
               path="create-destination"

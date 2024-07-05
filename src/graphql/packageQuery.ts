@@ -101,3 +101,13 @@ export const GET_COMPLETE_PACKAGE_DETAIL = gql`
     }
   }
 `;
+
+export const GET_ALL_PACKAGES = gql`
+  query Getallpackages {
+    getallpackages {
+      id
+      title
+      type
+    }
+  }
+`;
