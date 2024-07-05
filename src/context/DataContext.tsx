@@ -13,6 +13,9 @@ import {
   GET_FILTERED_THINGS,
   GET_COUNTRIES_CONTINENTS_QUERY,
   GET_FILTERED_CARS,
+  GET_TOURS_LIST_QUERY,
+  GET_ATTRACTIONS_QUERY,
+  GET_THINGS_QUERY,
   // GET_TOURS_QUERY,
 } from "../graphql/query";
 import { Destination } from "../components/destination/destination-card";
@@ -35,9 +38,9 @@ interface IDataContext {
   destinationFilteredError: any;
   destinationFilteredLoading: boolean;
   refetchFilteredDestination: any;
-  // tourListData: {
-  //   getTours: Tour[];
-  // };
+  tourListData: {
+    getTours: Tour[];
+  };
   // tourListLoading: boolean;
   // tourListError: any;
   tourFilteredData: {
@@ -49,9 +52,9 @@ interface IDataContext {
   tourFilteredLoading: boolean;
   tourFilteredError: any;
   refetch: any;
-  // attractionData: {
-  //   getAttractions: Attraction[];
-  // };
+  attractionData: {
+    getAttractions: Attraction[];
+  };
   // attractionLoading: boolean;
   // attractionError: any;
   attractionFilteredData: {
@@ -60,9 +63,9 @@ interface IDataContext {
   attractionFilteredLoading: boolean;
   attractionFilteredError: any;
   refetchAttraction: any;
-  // thingData: {
-  //   getThings: Thing[];
-  // };
+  thingData: {
+    getThings: Thing[];
+  };
   // thingLoading: boolean;
   // thingError: any;
   refetchThing: any;
@@ -115,22 +118,10 @@ export const DataProvider = ({ children }: Props) => {
       isTourActive: true,
     },
   });
-  // const {
-  //   loading: tourListLoading,
-  //   error: tourListError,
-  //   data: tourListData,
-  // }: QueryResult = useQuery(GET_TOURS_LIST_QUERY);
-  // const {
-  //   loading: attractionLoading,
-  //   error: attractionError,
-  //   data: attractionData,
-  // }: QueryResult = useQuery(GET_ATTRACTIONS_QUERY);
+  const { data: tourListData }: QueryResult = useQuery(GET_TOURS_LIST_QUERY);
+  const { data: attractionData }: QueryResult = useQuery(GET_ATTRACTIONS_QUERY);
 
-  // const {
-  //   loading: thingLoading,
-  //   error: thingError,
-  //   data: thingData,
-  // }: QueryResult = useQuery(GET_THINGS_QUERY);
+  const { data: thingData }: QueryResult = useQuery(GET_THINGS_QUERY);
 
   const {
     loading: destinationFilteredLoading,
@@ -245,10 +236,10 @@ export const DataProvider = ({ children }: Props) => {
     // tourData,
     // tourLoading,
     // tourError,
-    // attractionData,
+    attractionData,
     // attractionLoading,
     // attractionError,
-    // thingData,
+    thingData,
     // thingLoading,
     // thingError,
     destinationFilteredLoading,
@@ -263,7 +254,7 @@ export const DataProvider = ({ children }: Props) => {
     attractionFilteredData,
     attractionFilteredError,
     attractionFilteredLoading,
-    // tourListData,
+    tourListData,
     // tourListError,
     // tourListLoading,
     destinationListData,

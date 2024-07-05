@@ -1,12 +1,7 @@
 import React from "react";
 import { useData } from "../../../context/DataContext";
 import DarkModeSwitcher from "./DarkModeSwitcher";
-import { useDataStore } from "../../../store/store";
 import { useNavigate } from "react-router";
-import { Destination } from "../../destination/destination-card";
-import { Tour } from "../../../pages/tour/AllToursPage";
-import { Thing } from "../../../pages/thing/AllThingsPage";
-import { Attraction } from "../../../pages/attraction/AllAttractionsPage";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
@@ -14,12 +9,6 @@ const Header = (props: {
 }) => {
   const { destinationListData, tourListData, attractionData, thingData } =
     useData();
-  const {
-    setSelectedAttraction,
-    setSelectedDestination,
-    setSelectedThing,
-    setSelectedTour,
-  } = useDataStore();
   const [searchInput, setSearchInput] = React.useState<string>("");
   const [suggestions, setSuggestions] = React.useState<
     Array<{ id: string; name: string }>
@@ -116,31 +105,15 @@ const Header = (props: {
   const handleOpenSingle = (id: string) => {
     switch (filter) {
       case "destination":
-        setSelectedDestination(
-          (destinationListData.getDestinations?.find(
-            (destination) => destination.id == id
-          ) as Destination) || []
-        );
         navigate(`/editdestination/${id}`);
         break;
       case "tour":
-        setSelectedTour(
-          (tourListData.getTours?.find((tour) => tour.id == id) as Tour) || []
-        );
         navigate(`edittour/${id}`);
         break;
       case "thing":
-        setSelectedThing(
-          (thingData.getThings?.find((thing) => thing.id == id) as Thing) || []
-        );
         navigate(`editThing/${id}`);
         break;
       case "attraction":
-        setSelectedAttraction(
-          (attractionData.getAttractions?.find(
-            (attraction) => attraction.id == id
-          ) as Attraction) || []
-        );
         navigate(`editattraction/${id}`);
         break;
       default:

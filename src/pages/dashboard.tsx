@@ -1,21 +1,17 @@
 import React from "react";
-import { useDataStore } from "../store/store";
 import { useData } from "../context/DataContext";
 
 const Dashboard = () => {
   const {
     attractionData,
-    attractionLoading,
     destinationFilteredData,
     destinationFilteredLoading,
     tourFilteredData,
     tourFilteredLoading,
-    tourData,
   } = useData();
 
-  console.log(tourData);
   //add loading if condition
-  if (attractionLoading || destinationFilteredLoading || tourFilteredLoading)
+  if (destinationFilteredLoading || tourFilteredLoading)
     return <div>Loading...</div>;
 
   return (

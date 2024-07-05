@@ -227,23 +227,9 @@ export const GET_TOURS_LIST_QUERY = gql`
     getTours {
       id
       tourTitle
-      tourHyperlink
-      images {
-        id
-        imageUrl
-      }
       location
-      destination {
-        id
-        destinationName
-      }
       price
       currency
-      tourBokunId
-      tag {
-        id
-        name
-      }
       active
     }
   }
@@ -256,22 +242,6 @@ export const GET_ATTRACTIONS_QUERY = gql`
       id
       attractionTitle
       location
-      attractionBokunId
-      attractionHyperlink
-      price
-      currency
-      destination {
-        id
-        destinationName
-      }
-      images {
-        id
-        imageUrl
-      }
-      tag {
-        id
-        name
-      }
     }
   }
 `;

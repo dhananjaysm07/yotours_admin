@@ -36,7 +36,7 @@ const CreateAttractionPage = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const navigate = useNavigate();
 
-  const [createAttraction, { _, loading, error }] = useMutation(
+  const [createAttraction, { loading, error }] = useMutation(
     CREATE_ATTRACTION_MUTATION,
     {
       update(cache, { data: { createAttraction } }) {
